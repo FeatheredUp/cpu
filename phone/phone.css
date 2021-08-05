@@ -1,0 +1,21 @@
+table {
+    border-collapse: separate;
+    border-spacing: 5px;
+    user-select: none; 
+}
+td {
+    height: 50px;
+    width: 40px;
+    font-size: 24pt;
+    border: 1px black solid;
+    border-radius: 25px;
+    padding: 4px;
+    text-align: center;
+    vertical-align: middle;
+}
+.nooutline {
+    border: none;
+}
+.hidden {
+    display: none;
+}

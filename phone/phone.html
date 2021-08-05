@@ -1,0 +1,46 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="phone.css"></style>
+    </head>
+    <body>
+        <!-- sounds from https://www.soundjay.com/index.html -->
+        <h1><a href="../concepts.html">Return to main menu</a></h1>
+        <div id="phone">
+            <table>
+                <tr><td colspan="3" id="display"></td></tr>
+                <tr>
+                    <td class="digit">1</td>
+                    <td class="digit">2</td>
+                    <td class="digit">3</td>
+                </tr>
+                <tr>
+                    <td class="digit">4</td>
+                    <td class="digit">5</td>
+                    <td class="digit">6</td>
+                </tr>
+                <tr>
+                    <td class="digit">7</td>
+                    <td class="digit">8</td>
+                    <td class="digit">9</td>
+                </tr>
+                <tr>
+                    <td class="nooutline"></td>
+                    <td class="digit">0</td>
+                    <td class="nooutline"></td>
+                </tr>
+                <tr>
+                    <td colspan="2" id="dial">GO</td>
+                    <td id="back">&lt;</td>
+                </tr>
+            </table>
+        </div>
+        <div id="ringingPhone" class="hidden">
+            <img src="../images/ringing phone.gif">
+        </div>
+        <div id="nextScene" class="hidden">
+            <img src="../images/answering phone.jpeg">
+            <h1>HELLO! I'M IN THE LIBRARY!</h1>
+        </div>
+        <script src="phone.js"></script>
+    </body>
+</html>

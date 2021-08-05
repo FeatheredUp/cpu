@@ -1,0 +1,29 @@
+#terminalSCreen {
+    background-color: black;
+    color: limegreen;
+    height: calc(100% - 80px);
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 18pt;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.hidden {
+    display: none;
+}
+
+.blinking-cursor {
+    color: limegreen;
+    animation: 1s blink step-end infinite;
+  }
+
+@keyframes blink {
+    0%, 50% {
+        color: black;
+    }
+    50.1%, 100% {
+        color: inherit;
+    }
+}

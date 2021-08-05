@@ -1,0 +1,136 @@
+body {
+    background-color: rgb(22, 22, 22);
+    color           : rgb(211, 211, 211);
+    font-family     : "Digital", serif;
+    margin-top: 20px;
+    margin-left:20px;
+    margin-right: 20px;
+    margin-bottom: 20px;
+}
+
+a:link {
+    text-decoration: none;
+    color          : inherit;
+}
+
+a:visited {
+    text-decoration: none;
+    color          : inherit;
+}
+
+a:hover {
+    text-decoration: none;
+    color          : inherit;
+}
+
+a:active {
+    text-decoration: none;
+    color          : inherit;
+}
+
+.title {
+    font-size: 44px;
+    color    : white;
+    display  : flex;
+}
+
+.title .text {
+    padding-bottom: 0px;
+    border-bottom : 2px solid white;
+}
+
+.title .divider {
+    width            : 44px;
+    height           : 44px;
+    background-image : url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg"><polygon points="0,44, 44,0" stroke="white" stroke-width="2"/></svg>');
+    background-repeat: no-repeat;
+}
+
+.title .topline {
+    padding-top: 8px;
+    border-top : 2px solid white;
+    color      : rgb(211, 211, 211);
+    font-size  : 32px;
+}
+
+.subtitle {
+    margin-top: 10px;
+    font-size : 18px;
+}
+
+.section {
+    margin-top: 40px;
+    font-size : 26px;
+    display   : flex;
+}
+
+.section .text {
+    padding-bottom: 0px;
+    border-bottom : 2px solid rgb(80, 80, 80);
+}
+
+.section .divider {
+    width            : 26px;
+    height           : 26px;
+    background-image : url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg"><polygon points="0,26 26,0" stroke="rgb(80, 80, 80)" stroke-width="2"/></svg>');
+    background-repeat: no-repeat;
+}
+
+.section .topline {
+    border-top: 2px solid rgb(80, 80, 80);
+    flex-grow : 1;
+}
+
+.collectionSection {
+    margin-top: 10px;
+    display   : flex;
+}
+
+.collectionSection .text {
+    font-size: 18px;
+    width    : 200px;
+}
+
+.collectionSection .collection {
+    flex-grow : 1;
+    display        : flex;
+}
+
+.collection .emptymemory {
+    margin-left: auto;
+    padding-left:10px;
+    width            : 41px;
+    height           : 54px;
+    background-image : url(../images/memory\ card\ empty.jpg);
+    background-repeat: no-repeat;
+}
+
+.collection .fullmemory {
+    margin-left: auto;
+    padding-left:10px;
+    width            : 41px;
+    height           : 54px;
+    background-image : url(../images/memory\ card\ full.jpg);
+    background-repeat: no-repeat;
+}
+
+.collection .emptyparabel {
+    margin-left: auto;
+    width            : 38px;
+    height           : 55px;
+    background-image : url(../images/parabel\ empty.jpg);
+    background-repeat: no-repeat;
+}
+
+.collection .fullparabel {
+    margin-left: auto;
+    width            : 38px;
+    height           : 55px;
+    background-image : url(../images/parabel\ full.jpg);
+    background-repeat: no-repeat;
+}
+
+.instruction {
+    margin-top: 10px;
+    text-align: right;
+}

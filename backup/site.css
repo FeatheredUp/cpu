@@ -1,0 +1,9 @@
+@font-face {
+    font-family: "Digital";
+    src        : url("fonts/DS-DIGI.TTF") format("truetype");
+}
+
+@font-face {
+    font-family: "Comic Book";
+    src        : url("fonts/Comic_Book.woff") format("woff");
+}

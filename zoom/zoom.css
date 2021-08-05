@@ -1,0 +1,29 @@
+#zoomArea {
+    left: 25px;
+    top: 2px;
+    width: 400px;
+    height: 250px;
+    position: absolute;
+    z-index: 9;
+    background-color: #f1f1f1;
+    border: 1px solid #d3d3d3;
+    text-align: center;
+}
+
+#zoomAreaHeader {
+    padding: 10px;
+    cursor: move;
+    z-index: 10;
+    background-color: #2196F3;
+    color: #fff;
+}
+
+.hidden {
+    display: none;
+}
+
+.close {
+    font-family: Arial, Helvetica, sans-serif;
+    float: right;
+    cursor: default;
+}
