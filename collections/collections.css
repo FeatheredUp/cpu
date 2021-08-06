@@ -34,6 +34,11 @@ a:active {
     display  : flex;
 }
 
+.page {
+    margin: auto;
+    max-width:1000px;
+}
+
 .title .text {
     padding-bottom: 0px;
     border-bottom : 2px solid white;
@@ -87,7 +92,7 @@ a:active {
 }
 
 .collectionSection .text {
-    font-size: 18px;
+    font-size: 20px;
     width    : 200px;
 }
 
