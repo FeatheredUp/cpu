@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link type="text/css" rel="stylesheet" href="hedgemaze.css">
+</head>
+
+<body>
+    <h1><a href="../concepts.html">Return to main menu</a></h1>
+    <div id="info">Important stuff here</div>
+    <script type="module">
+        import * as THREE from './js/three.module.js';
+        import { FirstPersonControls } from './js/FirstPersonControls.js';
+
+        const textureLoader = new THREE.TextureLoader();
+
+        let _walls = [];
+        let _goal = null;
+
+        let _map = []; 
+        _map.push('#############');
+        _map.push('#X# #       #')
+        _map.push('# # # # ### #')
+        _map.push('#    #  # # #')
+        _map.push('## #   #    #')
+        _map.push('# # #### ## #')
+        _map.push('#    #    # #')
+        _map.push('#### # # #  #')
+        _map.push('#     #  # ##')
+        _map.push('# # #  ##   #')
+        _map.push('# #  #  # # #')
+        _map.push('#  #  #   # #')
+        _map.push('#############')
+
+        const debug = document.getElementById('info');
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x87ceeb, 1);
+        document.body.appendChild(renderer.domElement);
+
+        const clock = new THREE.Clock();
+
+        // fov (field of view, in degrees), aspect ratio, near and far clipping plane
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+        camera.position.set(115, 10, 115);
+        camera.lookAt(110, 10, 115);
+
+        // shortcut to the end
+        // camera.position.set(25, 10, 15);
+        // camera.lookAt(15, 10, 15);
+
+        const scene = new THREE.Scene();
+        createMap(scene);
+
+        const light = new THREE.PointLight(0xFFFFFF);
+        scene.add(light);
+
+        const ambientLight = new THREE.AmbientLight( 0x404040 );
+        scene.add(ambientLight);
+
+        // const spotLight = new THREE.SpotLight( 0xffffff ); 
+        // spotLight.position.set( 30, 10, 20 ); 
+        // spotLight.castShadow = true; 
+        // spotLight.shadow.mapSize.width = 1024; 
+        // spotLight.shadow.mapSize.height = 1024; 
+        // spotLight.shadow.camera.near = 500; 
+        // spotLight.shadow.camera.far = 4000; 
+        // spotLight.shadow.camera.fov = 30; 
+        // scene.add( spotLight );
+
+        // scene.fog = new THREE.Fog(0xccddff, 1, 50);
+
+        //scene.fog = new THREE.Fog(0x777777, 7, 50);
+
+        const controls = new FirstPersonControls(camera, renderer.domElement);
+        controls.movementSpeed = 15;
+		controls.lookSpeed = 0.1;
+        controls.lookVertical = false;
+        controls.allowVerticalMovement = false;
+
+        animate();
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const delta = clock.getDelta();
+            const prev = new THREE.Vector3();
+            prev.copy(camera.position);
+            controls.update(delta);
+
+            debug.innerText = "";
+            const collisionWall = detectCollision();
+            if (collisionWall!=null) {
+                debug.innerText += " Collision with wall (" + collisionWall.minX + ", " + collisionWall.minZ + ") to  (" + collisionWall.maxX + ", " + collisionWall.maxZ + ") ";
+                camera.position.x = prev.x;
+                camera.position.z = prev.z;
+            }
+            debug.innerText += "Camera (" + camera.position.x + ", " + camera.position.z + ") ";
+
+            light.position.set(camera.position.x, camera.position.y, camera.position.z);
+
+            _goal.rotation.x += 2 * delta;
+            _goal.rotation.y += 2 * delta;
+
+            renderer.render(scene, camera);
+        }
+
+        function detectCollision() {
+            for (const wall of _walls) {
+                const wallBox = getBox(wall);
+                if (isPointInsideBox(camera.position, wallBox)) return wallBox;
+            }
+            return null;
+        }
+
+        function getBox(wall) {
+            const buffer = 0.5;
+            const distance = 5;
+            const total = distance + buffer;
+            return {minX: wall.position.x - total, minZ: wall.position.z - total, maxX: wall.position.x + total, maxZ: wall.position.z + total};
+        }
+
+        function isPointInsideBox(point, box) {
+            return (point.x >= box.minX && point.x <= box.maxX) &&
+                (point.z >= box.minZ && point.z <= box.maxZ);
+        }
+
+        function createMap(scene) {
+            createFloor(scene);
+
+            let x = 0;
+            for (const row of _map) {
+                let z = 0;
+                for (const char of row) {
+                    if (char == '#') {
+                        createWall(scene, x, z);
+                    } else if (char == 'X') {
+                        createGoal(scene, x, z);
+                    }
+                    z += 10;
+                }
+                x += 10;
+            }
+        }
+
+        function createFloor(scene) {
+            const geometry = new THREE.BoxGeometry(300, 5, 300);
+            const texture = textureLoader.load( "images/grass.png" );
+            texture.wrapT = THREE.RepeatWrapping;
+            texture.wrapS = THREE.RepeatWrapping;
+            texture.repeat.set( 16, 16 );
+            const material = new THREE.MeshLambertMaterial({ color: 0x76fc00, map: texture});
+            const floor = new THREE.Mesh(geometry, material);
+            scene.add(floor);
+        }
+
+        function createWall(scene, x, y) {
+            const geometry = new THREE.BoxGeometry(10, 40, 10);
+			const texture = textureLoader.load( "images/hedge_ivy.png" );
+            texture.wrapT = THREE.RepeatWrapping;
+            texture.wrapS = THREE.RepeatWrapping;
+            texture.repeat.set( 2, 8 );
+            const material = new THREE.MeshLambertMaterial({ color: 0x009511, map: texture });
+            const wall = new THREE.Mesh(geometry, material);
+            wall.position.x = x + 5;
+            wall.position.z = y + 5;
+            scene.add(wall);
+            _walls.push(wall);
+        }
+
+        function createGoal(scene, x, z) {
+            const geometry = new THREE.BoxGeometry( 3, 3, 3 );
+            const material = new THREE.MeshLambertMaterial( {color: 0x000088} );
+            _goal = new THREE.Mesh(geometry, material);
+            _goal.position.x = x + 5;
+            _goal.position.z = z + 5;
+            _goal.position.y = 10;
+            scene.add(_goal);
+        }
+
+    </script>
+</body>
+</html>

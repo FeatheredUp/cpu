@@ -1,0 +1,11 @@
+Docs and official examples
+https://threejs.org/docs/
+
+Examples and blogs
+https://stemkoski.github.io/Three.js
+https://scottcornaby.com/2018/04/23/lets-program-a-3d-browser-game-index-and-code/
+
+https://developer.mozilla.org/en-US/docs/Games/Techniques/3D_collision_detection/Bounding_volume_collision_detection_with_THREE.js
+
+http://www.bryanjones.us/front-end-development
+https://scottcornaby.com/2018/04/23/lets-program-a-3d-browser-game-index-and-code/
