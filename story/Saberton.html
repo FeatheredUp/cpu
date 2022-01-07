@@ -1,0 +1,25 @@
+<html>
+    <head>
+        <script src="game.js"></script>
+        <link rel="stylesheet" href="../site.css">
+        <link rel="stylesheet" href="game.css">
+    </head>
+    <body>
+        <div class="page">
+            <p class="left"><a href="../home.html">Home</a></p>
+            <p id="pageName">Saberton Tower</p>
+            <button id="btnDone">Click when done</button>
+        </div>
+        <script>
+            const map = new StoryMap();
+            document.getElementById('pageName').innerText = `Saberton Tower (page ${map.getPageParameter()})`;
+
+            document.getElementById('btnDone').addEventListener("click", clickButton, false);
+
+            function clickButton() {
+                map.unlockNext();
+            } 
+        </script>
+    </body>
+</html>
+

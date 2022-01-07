@@ -16,6 +16,7 @@ img.src = 'maze.png';
 img.addEventListener('load', function () { showPicture(true); }, false);
 canvas.addEventListener('click', function (event) { mouseClick(event.pageX, event.pageY); }, false);
 canvas.addEventListener('mousemove', function (event) { mouseMove(event.pageX, event.pageY); }, false);
+canvas.addEventListener('contextmenu', event => event.preventDefault());
 
 let clickAreas = new ClickAreas();
 clickAreas.setDefaultZone('none', 0, 0, 1000, 1000);

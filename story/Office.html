@@ -1,0 +1,25 @@
+<html>
+    <head>
+        <script src="game.js"></script>
+        <link rel="stylesheet" href="../site.css">
+        <link rel="stylesheet" href="game.css">
+    </head>
+    <body>
+        <div class="page">
+            <p class="left"><a href="../home.html">Home</a></p>
+            <img src="../images/office.png" id="office" width=1000 height=500>
+        
+            <button id="btnDone">Click when done</button>
+        </div>
+        <script>
+            const map = new StoryMap();
+
+            document.getElementById('btnDone').addEventListener("click", clickButton, false);
+
+            function clickButton() {
+                map.unlockNext();
+            } 
+        </script>
+    </body>
+</html>
+

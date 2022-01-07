@@ -1,0 +1,21 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="site.css">
+        <link rel="stylesheet" href="home.css">
+    </head>
+    <body>
+        <div class="page">
+            <p class="left"><a href="home.html">Home</a></p>
+            <p>Select this to delete all progress, and restart the game from the beginning <button id="restartGame">Restart game</button></p> 
+        </div>
+        <script>
+            
+            document.getElementById('restartGame').addEventListener("click", restartGame, false);
+
+            function restartGame() {
+                localStorage.setItem('pages', "");
+                localStorage.setItem('simplifyCount', "");
+            } 
+        </script>
+    </body>
+</html>

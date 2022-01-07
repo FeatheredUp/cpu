@@ -7,3 +7,12 @@
     font-family: "Comic Book";
     src        : url("fonts/Comic_Book.woff") format("woff");
 }
+
+.left {
+    text-align: left;
+}
+
+.page {
+    margin: auto;
+    max-width: 1000px;
+}

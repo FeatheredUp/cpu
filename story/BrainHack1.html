@@ -1,0 +1,31 @@
+<html>
+    <head>
+        <script src="game.js?1"></script>
+        <script src="js/words/3letters.js"></script>
+        <script src="js/words/4letters.js"></script>
+        <script src="js/words/5letters.js"></script>
+        <script src="js/words/6letters.js"></script>
+        <script src="js/words/7letters.js"></script>
+        <link rel="stylesheet" href="../site.css">
+        <link rel="stylesheet" href="game.css">
+    </head>
+    <body>
+        <script>
+            const map = new StoryMap();
+        </script>
+        <div class="page">
+            <p class="left"><a href="../home.html">Home</a></p>
+            <h1>Brain Hack</h1>
+            <p class="instructions">Find as many anagrams of Nestor's name as you can.  You get half a point of energy for every letter you use.  
+                You can only use each letter once in each word.  Words must be between 3 and 6 letters long.  
+                Use the Simplify button to halve the amount of energy you need - but there are a limited number of Simplifies available.</p>
+            <canvas width=600 height=450 style="border:1px black solid; touch-action:none;"></canvas>
+            <br />
+            <div id="foundWords"></div>
+            <!-- <button id="findButton" >TESTING - Find all words</button>
+            <div id="debug"></div> -->
+            <script src="js/anagram.js?1"></script>
+        </div>
+    </body>
+</html>
+
