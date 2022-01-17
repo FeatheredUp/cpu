@@ -1,15 +1,12 @@
 /*
 
 TO DO:
-* Display end shapes
-* Cross out numbers when the required number of ships in place
-* Display 'battleship' list at the bottom and cross them out as displayed
-* 'Collision' if two ships diagonal
+* Enhancement - Cross out numbers when the required number of ships are in place on a row
+* Enhancement - Display 'battleship' list at the bottom and cross them out as displayed
 * Alert when finished
 * Add instructions and title
 * Restart button
 * 'Simplify' option
-
 */
 
 const canvas = document.getElementById('canvas');
