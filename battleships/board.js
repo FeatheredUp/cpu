@@ -110,21 +110,19 @@ class Piece {
         const isError = this.checkError();
 
         // background square
-        context.strokeStyle = 'blue';
-        context.fillStyle = 'grey';
-        context.lineWidth = 1;
-        context.beginPath();
-        context.rect(this.startX, this.startY, this.board.side, this.board.side);
-        context.fill();
-        context.stroke();
+        // context.strokeStyle = 'blue';
+        // context.fillStyle = 'grey';
+        // context.lineWidth = 1;
+        // context.beginPath();
+        // context.rect(this.startX, this.startY, this.board.side, this.board.side);
+        // context.fill();
+        // context.stroke();
 
+        this.drawFilledSquare(context, this.state != this.board.Unknown);
         // the ship part
-        context.strokeStyle = 'blue';
-        context.lineWidth = 1;
-        context.fillStyle = this.getColour(isError);
         this.drawShipShape(context, isError)
     }
-
+   
     drawShipShape(context, isError) {
         // TO DO - Show the outside of a curve in blue
 
@@ -137,7 +135,10 @@ class Piece {
         const rightCurve = showCurves && (allCurves || this.isCurvedSide(0, 1));
         const bottomCurve = showCurves && (allCurves || this.isCurvedSide(1, 0));
 
-        const points = new PiecePoints(context, this.startX, this.startY, this.board.side, 1)
+        context.strokeStyle = 'blue';
+        context.lineWidth = 1;
+        context.fillStyle = this.getColour(isError);
+        const points = new PiecePoints(context, this.startX, this.startY, this.board.side, 0)
 
         context.beginPath();
         if (leftCurve || topCurve) {
@@ -169,6 +170,20 @@ class Piece {
             points.leftMid.lineTo();
         }        
         
+        context.fill();
+    }
+
+    drawFilledSquare(context, showBackground) {
+        context.strokeStyle = 'blue';
+        context.lineWidth = 1;
+
+        if (showBackground) {
+            context.fillStyle = '#0055FF';
+        } else {
+            context.fillStyle = 'grey';
+        }
+        context.beginPath();
+        context.rect(this.startX, this.startY, this.board.side, this.board.side);
         context.fill();
         context.stroke();
     }
