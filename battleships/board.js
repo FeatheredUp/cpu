@@ -60,6 +60,16 @@ class Piece {
     startX;
     startY;
 
+    GivenShipColour = '#373125';
+    ShipColour = '#6c5a30';
+
+    GivenWaterColour = '#00FF00';
+    WaterColour = '#009900';
+
+    UnknownColour = 'grey';
+    StrokeColour = 'blue';
+
+
     constructor(board, row, column) {
         this.board = board;
         this.row = row;
@@ -102,30 +112,13 @@ class Piece {
     }
 
     draw(context) {
-        // For a ship:
-        // * Is it error (if any diagonal is also a ship)
-        // * TO DO Is it directional (if one side ship and opposite is set OR if it's given)
-        // * TO DO Is it Single (all 4 sides are water)
-
         const isError = this.checkError();
 
-        // background square
-        // context.strokeStyle = 'blue';
-        // context.fillStyle = 'grey';
-        // context.lineWidth = 1;
-        // context.beginPath();
-        // context.rect(this.startX, this.startY, this.board.side, this.board.side);
-        // context.fill();
-        // context.stroke();
-
         this.drawFilledSquare(context, this.state != this.board.Unknown);
-        // the ship part
         this.drawShipShape(context, isError)
     }
    
     drawShipShape(context, isError) {
-        // TO DO - Show the outside of a curve in blue
-
         // if this is a given piece OR all the sides are set & it's not an error
         const showCurves = this.given || (this.allSidesDefined() && !isError);
         const allCurves = showCurves && this.allSidesCurved();
@@ -135,7 +128,7 @@ class Piece {
         const rightCurve = showCurves && (allCurves || this.isCurvedSide(0, 1));
         const bottomCurve = showCurves && (allCurves || this.isCurvedSide(1, 0));
 
-        context.strokeStyle = 'blue';
+        context.strokeStyle = this.StrokeColour;
         context.lineWidth = 1;
         context.fillStyle = this.getColour(isError);
         const points = new PiecePoints(context, this.startX, this.startY, this.board.side, 0)
@@ -178,9 +171,9 @@ class Piece {
         context.lineWidth = 1;
 
         if (showBackground) {
-            context.fillStyle = '#0055FF';
+            context.fillStyle = this.WaterColour;
         } else {
-            context.fillStyle = 'grey';
+            context.fillStyle = this.UnknownColour;
         }
         context.beginPath();
         context.rect(this.startX, this.startY, this.board.side, this.board.side);
@@ -237,12 +230,12 @@ class Piece {
     getColour(isError) {
         if (isError) return 'red';
 
-        if (this.given && this.actual == this.board.Water) return '#000099';
-        if (this.given && this.actual == this.board.Ship) return 'purple';
+        if (this.given && this.actual == this.board.Water) return this.GivenWaterColour;
+        if (this.given && this.actual == this.board.Ship) return this.GivenShipColour;
 
-        if (this.state == this.board.Water) return '#0055FF';
-        if (this.state == this.board.Ship) return 'black';
-        return 'grey';
+        if (this.state == this.board.Water) return this.WaterColour;
+        if (this.state == this.board.Ship) return this.ShipColour;
+        return this.UnknownColour;
     }
 
     isShip() {
@@ -256,6 +249,10 @@ class Board {
     Unknown = 0;
     Water = 1;
     Ship = 2;
+
+    Undecided = 0;
+    Win = 1;
+    Lose = 2;
 
     side = 50;
     leftOffset = 350;
@@ -291,6 +288,7 @@ class Board {
         this.pieces[4][6].setShip();
 
         this.pieces[5][1].setShip();
+        //this.pieces[5][6].setGiven();
 
         this.pieces[6][1].setShip();
 
@@ -350,10 +348,23 @@ class Board {
                 if (hit) {
                     piece.toggle();
                     this.draw(context);
-                    break;
+                    return this.getBoardCompletionState();
                 }
             }
         }
+        return this.Undecided;
+    }
+
+    getBoardCompletionState() {
+        let completionState = this.Win;
+        for (const row of this.pieces) {
+            for (const piece of row) {
+                if (piece.state == this.Unknown) return this.Undecided;
+                if (piece.state != piece.actual) completionState = this.Lose;
+            }
+        }
+
+        return completionState;
     }
 
     checkError(row, col) {
