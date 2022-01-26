@@ -330,6 +330,32 @@ class Board {
         }
     }
 
+    hint(context) {
+        const possibles = this.getHintablePieces();
+        if (possibles.length == 0) return;
+        const index = this.getRandomValue(0, possibles.length - 1);
+        possibles[index].setGiven();
+        this.draw(context);
+        return this.getBoardCompletionState();
+    }
+
+    // returns a whole number between min and max (both inclusive).  I.e. what 'pick a number between 1 and 10' means.
+    getRandomValue(min, max) {
+        return Math.floor(Math.random() * (max - min + 1) + min);
+    }
+
+    getHintablePieces() {
+        let result = [];
+        for (const row of this.pieces) {
+            for (const piece of row) {
+                // to be hintable, must not already be given, and must be a ship that hasn't been identified
+                if (!piece.given && piece.actual == this.Ship && piece.state != this.Ship ) {
+                    result.push(piece);
+                }
+            }
+        }
+        return result;
+    }
 
     drawText(context, text, x, y) {
         context.font = '18px Verdana, sans-serif';
@@ -356,15 +382,16 @@ class Board {
     }
 
     getBoardCompletionState() {
-        let completionState = this.Win;
+        // If _any_ piece that is a ship is NOT marked as a ship OR if _any_ piece that is water is marked as a ship, it's undecided
+
         for (const row of this.pieces) {
             for (const piece of row) {
-                if (piece.state == this.Unknown) return this.Undecided;
-                if (piece.state != piece.actual) completionState = this.Lose;
+                if (piece.actual == this.Ship && piece.state != this.Ship) return this.Undecided;
+                if (piece.actual == this.Water && piece.state == this.Ship) return this.Undecided;
             }
         }
 
-        return completionState;
+        return this.Win;
     }
 
     checkError(row, col) {
