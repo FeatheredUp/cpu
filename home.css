@@ -27,3 +27,8 @@ a:active {
     text-decoration: none;
     color          : inherit;
 }
+
+#cpu {
+    width: 750px;
+    height: 750px;
+}

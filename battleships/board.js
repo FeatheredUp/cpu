@@ -67,8 +67,7 @@ class Piece {
     WaterColour = '#009900';
 
     UnknownColour = 'grey';
-    StrokeColour = 'blue';
-
+    StrokeColour = '#6c5a30';
 
     constructor(board, row, column) {
         this.board = board;
@@ -167,7 +166,7 @@ class Piece {
     }
 
     drawFilledSquare(context, showBackground) {
-        context.strokeStyle = 'blue';
+        context.strokeStyle = this.StrokeColour;
         context.lineWidth = 1;
 
         if (showBackground) {
@@ -280,6 +279,7 @@ class Board {
         this.pieces[2][5].setShip();
 
         this.pieces[3][1].setShip().setGiven();
+        //this.pieces[3][2].setGiven();
         this.pieces[3][9].setShip();
 
         this.pieces[4][3].setShip().setGiven();
@@ -288,7 +288,6 @@ class Board {
         this.pieces[4][6].setShip();
 
         this.pieces[5][1].setShip();
-        //this.pieces[5][6].setGiven();
 
         this.pieces[6][1].setShip();
 
@@ -358,14 +357,15 @@ class Board {
     }
 
     drawText(context, text, x, y) {
-        context.font = '18px Verdana, sans-serif';
-        context.strokeStyle = 'green';
+        context.font = '24px Verdana, sans-serif';
+        context.strokeStyle = '#0f0f0f';
         context.textAlign = "center";
         context.textBaseline = "middle";
-        context.fillStyle = 'blue';
+        context.lineWidth = 3;
+        context.fillStyle = '#f0f0f0';
+        context.strokeText(text, x, y);
         context.fillText(text, x, y);
     }
-
 
     cursorClick(context, x, y) {
         for (const row of this.pieces) {
