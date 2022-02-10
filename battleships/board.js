@@ -256,6 +256,8 @@ class Board {
     side = 50;
     leftOffset = 250;
     topOffset = 50;
+    borderWidth = 7;
+    borderColour = '#f0f0f0';
 
     size;
     pieces = [];
@@ -304,6 +306,13 @@ class Board {
     }
 
     draw(context) {
+        context.fillStyle = this.borderColour;
+        context.beginPath();
+        context.rect(this.leftOffset-this.borderWidth, this.topOffset-this.borderWidth, this.side * this.size + 2 * this.borderWidth, this.side * this.size + 2 * this.borderWidth);
+        context.fill();
+        context.stroke();
+
+
         let rowCount = [];
         let colCount = [];
         for (let index = 0; index < this.size; index++) {
