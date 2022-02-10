@@ -10,9 +10,11 @@ const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d');
 const statusElement = document.getElementById('status');
 const hintButton = document.getElementById('hintButton');
-
 const board = new Board(10);
-board.draw(context);
+
+function initialise() {
+    board.draw(context);
+}
 
 function mouseClickCanvas(pageX, pageY) { 
     let canvasLeft = canvas.offsetLeft + canvas.clientLeft,
@@ -32,11 +34,17 @@ function displayCompletion(result) {
     console.debug(result);
     if (result == board.Win) {
         statusElement.innerText = 'Well done!';
-        alert('Well done!');
+        window.setTimeout( () => { alert('Well done'); } , 200);
     } else if (result == board.Lose) {
         statusElement.innerText = 'Something is wrong...';
     }
 }
+const img = new Image();   
+img.src = '../images/flowerbed.png'; 
+img.addEventListener('load', function() { 
+    context.drawImage(img,0,0);
+    initialise();
+}, false);
 
 canvas.addEventListener('click', function (event) {mouseClickCanvas(event.pageX, event.pageY);}, false);
 hintButton.addEventListener('click', function (event) {clickHint();}, false);

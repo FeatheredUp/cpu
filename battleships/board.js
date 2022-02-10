@@ -254,7 +254,7 @@ class Board {
     Lose = 2;
 
     side = 50;
-    leftOffset = 350;
+    leftOffset = 250;
     topOffset = 50;
 
     size;
