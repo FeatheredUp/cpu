@@ -60,6 +60,15 @@ class Piece {
     startX;
     startY;
 
+    GivenShipColour = '#373125';
+    ShipColour = '#6c5a30';
+
+    GivenWaterColour = '#00FF00';
+    WaterColour = '#009900';
+
+    UnknownColour = 'grey';
+    StrokeColour = '#6c5a30';
+
     constructor(board, row, column) {
         this.board = board;
         this.row = row;
@@ -102,35 +111,13 @@ class Piece {
     }
 
     draw(context) {
-        // For a ship:
-        // * Is it error (if any diagonal is also a ship)
-        // * TO DO Is it directional (if one side ship and opposite is set OR if it's given)
-        // * TO DO Is it Single (all 4 sides are water)
-
         const isError = this.checkError();
 
-        // background square
-        context.strokeStyle = 'blue';
-        context.fillStyle = 'grey';
-        context.lineWidth = 1;
-        context.beginPath();
-        context.rect(this.startX, this.startY, this.board.side, this.board.side);
-        context.fill();
-        context.stroke();
-
-        // the ship part
-        context.strokeStyle = 'blue';
-        context.lineWidth = 1;
-        context.fillStyle = this.getColour(isError);
+        this.drawFilledSquare(context, this.state != this.board.Unknown);
         this.drawShipShape(context, isError)
     }
-
+   
     drawShipShape(context, isError) {
-        // TO DO - Only show shape if it's given OR if all sides are defined
-        // TO DO - If a given square is in Error state, still show the shape, just in red
-        // TO DO - Show the outside of a curve in blue
-
-
         // if this is a given piece OR all the sides are set & it's not an error
         const showCurves = this.given || (this.allSidesDefined() && !isError);
         const allCurves = showCurves && this.allSidesCurved();
@@ -140,21 +127,10 @@ class Piece {
         const rightCurve = showCurves && (allCurves || this.isCurvedSide(0, 1));
         const bottomCurve = showCurves && (allCurves || this.isCurvedSide(1, 0));
 
+        context.strokeStyle = this.StrokeColour;
+        context.lineWidth = 1;
+        context.fillStyle = this.getColour(isError);
         const points = new PiecePoints(context, this.startX, this.startY, this.board.side, 0)
-
-        // const offset = 0;
-        // const centre = new Point (context, this.startX + this.board.side / 2, this.startY + this.board.side / 2);
-        // const radius = (this.board.side / 2) - offset;
-
-        // const topLeft = new Point(context, this.startX + offset, this.startY + offset);
-        // const topRight = new Point(context, this.startX + this.board.side - offset, this.startY + offset);
-        // const bottomLeft = new Point(context, this.startX + offset, this.startY + this.board.side - offset);
-        // const bottomRight = new Point(context, this.startX + this.board.side - offset, this.startY + this.board.side - offset);
-
-        // const leftMidPoint = new Point(context, this.startX + offset, this.startY + (this.board.side / 2));
-        // const topMidPoint = new Point(context, this.startX + (this.board.side / 2), this.StartY + offset);
-        // const rightMidPoint = new Point(context, this.startX + this.board.side - offset, this.startY + (this.board.side / 2));
-        // const bottomMidPoint = new Point(context, this.startX + (this.board.side / 2), this.StartY + this.board.side - offset);
 
         context.beginPath();
         if (leftCurve || topCurve) {
@@ -168,7 +144,6 @@ class Piece {
         if (topCurve || rightCurve) {
             points.centre.arc(points.radius, 3*Math.PI/2, 2 * Math.PI);
         } else {
-            points.topMid.moveTo();
             points.topRight.lineTo();
             points.rightMid.lineTo();
         }
@@ -176,7 +151,6 @@ class Piece {
         if (rightCurve || bottomCurve) {
             points.centre.arc(points.radius, 0, Math.PI/2);
         } else {
-            points.rightMid.moveTo();
             points.bottomRight.lineTo();
             points.bottomMid.lineTo();
         }
@@ -184,11 +158,24 @@ class Piece {
         if (bottomCurve || leftCurve) {
             points.centre.arc(points.radius, Math.PI/2, Math.PI);
         } else {
-            points.bottomMid.moveTo();
             points.bottomLeft.lineTo();
             points.leftMid.lineTo();
         }        
         
+        context.fill();
+    }
+
+    drawFilledSquare(context, showBackground) {
+        context.strokeStyle = this.StrokeColour;
+        context.lineWidth = 1;
+
+        if (showBackground) {
+            context.fillStyle = this.WaterColour;
+        } else {
+            context.fillStyle = this.UnknownColour;
+        }
+        context.beginPath();
+        context.rect(this.startX, this.startY, this.board.side, this.board.side);
         context.fill();
         context.stroke();
     }
@@ -242,12 +229,12 @@ class Piece {
     getColour(isError) {
         if (isError) return 'red';
 
-        if (this.given && this.actual == this.board.Water) return '#000099';
-        if (this.given && this.actual == this.board.Ship) return 'purple';
+        if (this.given && this.actual == this.board.Water) return this.GivenWaterColour;
+        if (this.given && this.actual == this.board.Ship) return this.GivenShipColour;
 
-        if (this.state == this.board.Water) return '#0055FF';
-        if (this.state == this.board.Ship) return 'black';
-        return 'grey';
+        if (this.state == this.board.Water) return this.WaterColour;
+        if (this.state == this.board.Ship) return this.ShipColour;
+        return this.UnknownColour;
     }
 
     isShip() {
@@ -262,9 +249,15 @@ class Board {
     Water = 1;
     Ship = 2;
 
+    Undecided = 0;
+    Win = 1;
+    Lose = 2;
+
     side = 50;
-    leftOffset = 350;
+    leftOffset = 250;
     topOffset = 50;
+    borderWidth = 7;
+    borderColour = '#f0f0f0';
 
     size;
     pieces = [];
@@ -288,6 +281,7 @@ class Board {
         this.pieces[2][5].setShip();
 
         this.pieces[3][1].setShip().setGiven();
+        //this.pieces[3][2].setGiven();
         this.pieces[3][9].setShip();
 
         this.pieces[4][3].setShip().setGiven();
@@ -312,6 +306,13 @@ class Board {
     }
 
     draw(context) {
+        context.fillStyle = this.borderColour;
+        context.beginPath();
+        context.rect(this.leftOffset-this.borderWidth, this.topOffset-this.borderWidth, this.side * this.size + 2 * this.borderWidth, this.side * this.size + 2 * this.borderWidth);
+        context.fill();
+        context.stroke();
+
+
         let rowCount = [];
         let colCount = [];
         for (let index = 0; index < this.size; index++) {
@@ -337,16 +338,43 @@ class Board {
         }
     }
 
-
-    drawText(context, text, x, y) {
-        context.font = '18px Verdana, sans-serif';
-        context.strokeStyle = 'green';
-        context.textAlign = "center";
-        context.textBaseline = "middle";
-        context.fillStyle = 'blue';
-        context.fillText(text, x, y);
+    hint(context) {
+        const possibles = this.getHintablePieces();
+        if (possibles.length == 0) return;
+        const index = this.getRandomValue(0, possibles.length - 1);
+        possibles[index].setGiven();
+        this.draw(context);
+        return this.getBoardCompletionState();
     }
 
+    // returns a whole number between min and max (both inclusive).  I.e. what 'pick a number between 1 and 10' means.
+    getRandomValue(min, max) {
+        return Math.floor(Math.random() * (max - min + 1) + min);
+    }
+
+    getHintablePieces() {
+        let result = [];
+        for (const row of this.pieces) {
+            for (const piece of row) {
+                // to be hintable, must not already be given, and must be a ship that hasn't been identified
+                if (!piece.given && piece.actual == this.Ship && piece.state != this.Ship ) {
+                    result.push(piece);
+                }
+            }
+        }
+        return result;
+    }
+
+    drawText(context, text, x, y) {
+        context.font = '24px Verdana, sans-serif';
+        context.strokeStyle = '#0f0f0f';
+        context.textAlign = "center";
+        context.textBaseline = "middle";
+        context.lineWidth = 3;
+        context.fillStyle = '#f0f0f0';
+        context.strokeText(text, x, y);
+        context.fillText(text, x, y);
+    }
 
     cursorClick(context, x, y) {
         for (const row of this.pieces) {
@@ -355,10 +383,24 @@ class Board {
                 if (hit) {
                     piece.toggle();
                     this.draw(context);
-                    break;
+                    return this.getBoardCompletionState();
                 }
             }
         }
+        return this.Undecided;
+    }
+
+    getBoardCompletionState() {
+        // If _any_ piece that is a ship is NOT marked as a ship OR if _any_ piece that is water is marked as a ship, it's undecided
+
+        for (const row of this.pieces) {
+            for (const piece of row) {
+                if (piece.actual == this.Ship && piece.state != this.Ship) return this.Undecided;
+                if (piece.actual == this.Water && piece.state == this.Ship) return this.Undecided;
+            }
+        }
+
+        return this.Win;
     }
 
     checkError(row, col) {

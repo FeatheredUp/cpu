@@ -1,0 +1,17 @@
+body{
+    background-color: rgb(22, 22, 22);
+    color: white;
+}
+
+.container {
+    display:flex;
+    flex-direction: column;
+}
+
+#canvas {
+    align-self: center;
+}
+
+.menu {
+    align-self: center;
+}

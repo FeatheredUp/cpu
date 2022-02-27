@@ -30,3 +30,20 @@ a:active {
 .instructions {
     font-family: "Papyrus", fantasy;
 }
+
+.container {
+    display:flex;
+    flex-direction: column;
+}
+
+/* #canvas {
+    align-self: center;
+} */
+
+.mainArea{
+    align-self: center;
+}
+
+.menu {
+    align-self: center;
+}

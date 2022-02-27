@@ -6,6 +6,7 @@
     "configurations": [
     
         {
+            "preLaunchTask": "echo",
             "type": "pwa-chrome",
             "request": "launch",
             "name": "Open main.html",
