@@ -76,7 +76,11 @@ class Menu {
         this.menuHolder = document.getElementById('menu');
         if (this.menuHolder == null || this.menuHolder == undefined) return;
 
-        this.menuHolder.src = "../images/menu.jpg";
+        if (map.isPuzzle)
+            this.menuHolder.src = "../images/menu.jpg"
+        else 
+            this.menuHolder.src = "../images/menu2.jpg";
+
         this.menuHolder.width = 350;
         this.menuHolder.height = 150;
         this.menuHolder.addEventListener('click', (event) => {this.clickMenu(event.pageX, event.pageY);}, false);
@@ -104,10 +108,10 @@ class Menu {
                 this.map.goHome();
                 return;
             case 'hint':
-                this.actOnHint();
+                 if (map.isPuzzle) this.actOnHint();
                 return;
             case 'help' :
-                this.map.showHelp();
+                if (map.isPuzzle) this.map.showHelp();
                 return;
         }
     }
@@ -132,6 +136,7 @@ class StoryMap {
     simplification;
     menu;
     helpDescription;
+    isPuzzle = false;
     constructor(simplifyFunction, helpDescription) {
         let json = localStorage.getItem('pages');
         if (!json) {
@@ -164,6 +169,8 @@ class StoryMap {
         if (lastPage.name != currentPageName) {
             window.location.href = lastPage.name;
         }
+
+        this.isPuzzle = lastPage.isPuzzle;
 
         this.simplification = new Simplification();
 
@@ -220,8 +227,12 @@ class StoryMap {
     }
 
     goHome() {
-        const confirm = window.confirm(`Do you want to return to the home page?  You will lose any progress on the current puzzle, and will resume at the start of the current puzzle.`);
-        if (confirm) { 
+        if (this.isPuzzle) {
+            const confirm = window.confirm(`Do you want to return to the home page?  You will lose any progress on the current puzzle, and will resume at the start of the current puzzle.`);
+            if (confirm) { 
+                window.location.href = '../home.html';
+            }
+        } else {
             window.location.href = '../home.html';
         }
     }
