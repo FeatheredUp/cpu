@@ -471,7 +471,7 @@ class Board {
     
     whiteOutArea(startX, startY, width, height) {
         this.context.beginPath();
-        this.context.fillStyle = 'yellow';
+        this.context.fillStyle = 'white';
         this.context.rect(startX, startY, width, height, 12);
         this.context.closePath();
         this.context.fill();
