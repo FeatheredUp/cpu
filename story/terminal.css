@@ -1,0 +1,41 @@
+#terminalScreen {
+    background-image : url("terminal border.png");
+    background-repeat: no-repeat;
+    background-color : black;
+    color            : #03A062;
+    font-family      : 'Courier New', Courier, monospace;
+    font-size        : 12pt;
+    padding-left     : 100px;
+    padding-top      : 80px;
+    height           : 690px;
+    width            : 1060px;
+    text-align       : left;
+    align-self       : center;
+}
+
+#previousText {
+    width   : 960px;
+    overflow: hidden;
+}
+
+.hidden {
+    display: none;
+}
+
+.blinking-cursor {
+    color    : limegreen;
+    animation: 1s blink step-end infinite;
+}
+
+@keyframes blink {
+
+    0%,
+    50% {
+        color: black;
+    }
+
+    50.1%,
+    100% {
+        color: inherit;
+    }
+}

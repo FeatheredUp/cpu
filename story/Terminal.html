@@ -4,10 +4,16 @@
         <script src="game.js"></script>
         <link rel="stylesheet" href="../site.css">
         <link rel="stylesheet" href="game.css">
+        <link rel="stylesheet" href="terminal.css">
     </head>
     <body>
         <div class="container">
-            <canvas id="canvas" width="1160" height="770" class="mainArea"></canvas>
+            <div id="terminalScreen">
+                <div id="previousText"></div>
+                <span id="inputLine">
+                    <span id="prompt">&gt;</span> <span id="insertedText"></span><span class="blinking-cursor">|</span>
+                </span>
+            </div>
             <button id="btnDone">Click when done</button>
             <img class="menu" id="menu" />
         </div>

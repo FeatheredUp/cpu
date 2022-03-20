@@ -70,6 +70,7 @@ class Menu {
     menuHolder;
     buttons = [];
     simplifyFunction;
+    highlightedButton = 'none';
     constructor(map, simplifyFunction) {
         this.simplifyFunction = simplifyFunction;
         this.map = map;
@@ -77,13 +78,14 @@ class Menu {
         if (this.menuHolder == null || this.menuHolder == undefined) return;
 
         if (map.isPuzzle)
-            this.menuHolder.src = "../images/menu.jpg"
+            this.menuHolder.src = "../images/menu.png"
         else 
-            this.menuHolder.src = "../images/menu2.jpg";
+            this.menuHolder.src = "../images/menu2.png";
 
         this.menuHolder.width = 350;
         this.menuHolder.height = 150;
         this.menuHolder.addEventListener('click', (event) => {this.clickMenu(event.pageX, event.pageY);}, false);
+        this.menuHolder.addEventListener('mousemove', (event) => {this.mousemoveMenu(event.pageX, event.pageY);}, false);
 
         this.buttons.push(new ClickableRoundArea('hint',  85, 80, 35));
         this.buttons.push(new ClickableRoundArea('home', 175, 60, 35));
@@ -100,6 +102,50 @@ class Menu {
                this.actOnButton(button.name);
            }
        }
+    } 
+    
+    mousemoveMenu(pageX, pageY) {
+        let canvasLeft = this.menuHolder.offsetLeft + this.menuHolder.clientLeft,
+            canvasTop = this.menuHolder.offsetTop + this.menuHolder.clientTop,
+            x = pageX - canvasLeft,
+            y = pageY - canvasTop;
+       for (const button of this.buttons) {
+           if (button.isInBounds(x,y)) {
+            this.hoverOnButton(button.name);
+            return;
+           }
+       }
+       this.hoverOnButton('none');
+    }
+
+    hoverOnButton(buttonName) {
+        if (this.highlightedButton == buttonName) return;
+        this.highlightedButton = buttonName;
+        if (map.isPuzzle){
+            switch (buttonName) {
+                case 'home':
+                    this.menuHolder.src = "../images/menu_home.png";
+                    return;
+                case 'hint':
+                    this.menuHolder.src = "../images/menu_hint.png";
+                    return;
+                case 'help' :
+                    this.menuHolder.src = "../images/menu_help.png";
+                    return; 
+                case 'none' :
+                    this.menuHolder.src = "../images/menu.png";
+                    return;
+            }
+        } else {
+            switch (buttonName) {
+                case 'home':
+                    this.menuHolder.src = "../images/menu2_home.png";
+                    return;
+                case 'none' :
+                    this.menuHolder.src = "../images/menu2.png";
+                    return;
+            }
+        }
     }
 
     actOnButton(buttonName) {
@@ -147,7 +193,9 @@ class StoryMap {
                     '{"name":"Saberton.html?1", "next":"Saberton.html?2"}, ' +
                     '{"name":"Saberton.html?2", "next":"Flowerbed.html"}, ' +
                     '{"name":"Flowerbed.html", "next":"CityMap.html?2", "isPuzzle": true}, ' +
-                    '{"name":"CityMap.html?2", "next":""}]';
+                    '{"name":"CityMap.html?2", "next":"WordString.html"}, ' +
+                    '{"name":"WordString.html", "next":"CityMap.html?3", "isPuzzle": true}, ' +
+                    '{"name":"CityMap.html?3", "next":""}]';
             localStorage.setItem('pages', json);
 
         }
@@ -228,7 +276,7 @@ class StoryMap {
 
     goHome() {
         if (this.isPuzzle) {
-            const confirm = window.confirm(`Do you want to return to the home page?  You will lose any progress on the current puzzle, and will resume at the start of the current puzzle.`);
+            const confirm = window.confirm(`Do you want to return to the home page?  You will lose any progress on the current puzzle, and will resume at the start of the current puzzle on return.`);
             if (confirm) { 
                 window.location.href = '../home.html';
             }

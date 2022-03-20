@@ -1,9 +1,5 @@
 /*
 TO DO
-*) When 100 reached, show 'well done' message and unlock next page
-*) Add a next page in the json
-*) Display the words in 2 or 3 columns rather than 1??
-*) Add some info about what the player should do
 *) Remove some more of the non-words
 */
 
@@ -187,20 +183,6 @@ class LetterPieces {
     getEnergy() {
         return this.internalValidWords.getEnergyPercent();
     }
-
-    debugGetAllWords() {
-        let letterCount = 0;
-        for (const word of this.internalValidWords.words) {
-            letterCount += word.letters.length;
-        }
-
-        var debug = document.getElementById('debug');
-        debug.innerHTML = `Words found: ${this.internalValidWords.wordCount()}<br>`;
-        debug.innerHTML += `Total letters: ${letterCount}<br>`;
-        for (const word of this.internalValidWords.words) {
-            debug.innerHTML += word.letters + '<br>';
-        }
-    }
 }
 
 class Board {
@@ -215,6 +197,10 @@ class Board {
     pointerId = null;
     letterPieces = null;
     energyRequired = 100;
+    energyX = 920;
+    energyY = 55;
+    energyHeight = 400;
+    energyWidth = 25;
 
     constructor(letters, canvas) {
         this.canvas = canvas;
@@ -253,6 +239,7 @@ class Board {
     }
 
     draw() {
+        const imgBorder = loadImage('../images/border.png', main);
         const info = map.getCurrentPageInfo();
         const divisionFromSimplification = Math.pow(2, info.simplifies);
         this.energyRequired /= divisionFromSimplification;
@@ -260,9 +247,15 @@ class Board {
         for (const piece of this.pieces) {
             piece.draw(this.context, this.radius);
         }
-        this.drawSimplifyButton();
+        this.context.drawImage(imgBorder, 0, 0);
         this.drawEmptyEnergyBar();
         this.displayUpdatedEnergy();
+    }
+
+    loadImage(src) {
+        const img = new Image();
+        img.src = src;
+        return img;
     }
 
     drawEmptyEnergyBar() {
@@ -270,40 +263,20 @@ class Board {
         this.context.fillStyle = 'white';
         this.context.lineWidth = 1;
         this.context.beginPath();
-        this.context.rect(559, 24, 22, 402);
+        this.context.rect(this.energyX - 1, this.energyY - 1, this.energyWidth + 2, this.energyHeight + 2);
         this.context.closePath();
         this.context.fill();
         this.context.stroke();
 
-        let ypos = 425;
+        let ypos = this.energyY + this.energyHeight;
         this.context.textAlign = "right";
         this.context.font = '10px system-ui';
         this.context.fillStyle = 'black';
         for (let index = 0; index <= 10; index++) {
-            this.context.fillText(index * 10, 555, ypos);
+            this.context.fillText(index * 10, this.energyX - 5, ypos);
             ypos -= 40;
         }
         this.context.textAlign = "center";
-    }
-
-    drawSimplifyButton() {
-        this.context.strokeStyle = 'black';
-        this.context.fillStyle = '#DDDDDD';
-        this.context.beginPath();
-        this.context.roundRect(30, 20, 100, 40, 5);
-        this.context.closePath();
-        this.context.fill();
-        this.context.stroke();
-
-        this.context.font = '18px Georgia, serif';
-        this.context.fillStyle = 'black';
-        this.context.fillText("Simplify", 80, 40);
-    }
-
-    isSimplifyButton(pt) {
-        if (pt.x < 30 || pt.x > 130) return false;
-        if (pt.y < 20 || pt.y > 60) return false;
-        return true;
     }
 
     getCentre(pos) {
@@ -326,10 +299,10 @@ class Board {
     pointerDown(clientPoint, pointerId) {
         const pt = clientPoint.convertFromPageToCanvas(c);
 
-        if (this.isSimplifyButton(pt)) {
-            this.simplifyGame();
-            return;
-        }
+        // if (this.isSimplifyButton(pt)) {
+        //     this.simplifyGame();
+        //     return;
+        // }
 
         this.originalImageData = this.context.getImageData(0, 0, this.canvas.width, this.canvas.height);
         this.saveBoard();
@@ -359,11 +332,11 @@ class Board {
         const word = this.getCurrentWord();
         const result = this.letterPieces.enterWord(word);
         if (result == this.letterPieces.EnterWordResult.VALID) {
-            document.getElementById('foundWords').innerHTML += word + '<br>';
             this.checkWinCondition();
         }
         this.resetBoard();
         this.displayUpdatedEnergy();
+        this.showFoundWords();
         this.pointerId = null;
     }
 
@@ -425,6 +398,7 @@ class Board {
         this.context.font = '20px Verdana, sans-serif';
         this.context.strokeStyle = 'black';
         this.context.fillStyle = 'white';
+        this.context.textAlign = "center";
         this.context.lineWidth = 1;
         this.context.beginPath();
         this.context.roundRect(200, 25, 200, 50, 12);
@@ -436,34 +410,38 @@ class Board {
         this.context.fillText(word, 300, 50);
     }
     
-    displayUpdatedEnergy() {
-        // white out energy bar
+    whiteOutArea(startX, startY, width, height) {
         this.context.beginPath();
         this.context.fillStyle = 'white';
-        this.context.rect(560, 25, 20, 400, 12);
+        this.context.rect(startX, startY, width, height, 12);
         this.context.closePath();
         this.context.fill();
+    }
+
+    displayUpdatedEnergy() {
+        // white out energy bar
+        this.whiteOutArea(this.energyX, this.energyY, this.energyWidth, this.energyHeight);
 
         let energy = this.letterPieces.getEnergy();
         if (energy > 100) energy = 100;
 
         const height = energy * 4;
-        const bottom = 425;
+        const bottom = this.energyY + this.energyHeight;
         const top = bottom - height;
 
         // the energy itself
         this.context.fillStyle = 'yellow';
         this.context.lineWidth = 1;
         this.context.beginPath();
-        this.context.rect(560, top, 20, height, 12);
+        this.context.rect(this.energyX, top, this.energyWidth, height, 12);
         this.context.closePath();
         this.context.fill();
 
         // Line at the top of the bar
         this.context.strokeStyle = 'black';
         this.context.beginPath();
-        this.context.moveTo(560, 24);
-        this.context.lineTo(580, 24);
+        this.context.moveTo(this.energyX, this.energyY - 1);
+        this.context.lineTo(this.energyX + this.energyWidth, this.energyY - 1);
         this.context.closePath();
         this.context.stroke();
 
@@ -471,8 +449,8 @@ class Board {
         if (energy > 0) {
             this.context.strokeStyle = 'black';
             this.context.beginPath();
-            this.context.moveTo(560, top - 1);
-            this.context.lineTo(580, top - 1);
+            this.context.moveTo(this.energyX, top - 1);
+            this.context.lineTo(this.energyX + this.energyWidth, top - 1);
             this.context.closePath();
             this.context.stroke();
         }
@@ -482,8 +460,8 @@ class Board {
         const maxPos = bottom - maxHeight;
         this.context.strokeStyle = 'red';
         this.context.beginPath();
-        this.context.moveTo(560, maxPos - 1);
-        this.context.lineTo(580, maxPos - 1);
+        this.context.moveTo(this.energyX, maxPos - 1);
+        this.context.lineTo(this.energyX + this.energyWidth, maxPos - 1);
         this.context.closePath();
         this.context.stroke();
     }
@@ -498,27 +476,58 @@ class Board {
     }
 
     simplifyGame() {
-        // Show info about current simplify system and how many left and ask if player is certain
-        const simplify = map.requestSimplify();
-        // If they agree
-        if (simplify) {
-            // Decrease energy required 
-            this.energyRequired /= 2;
-            // Redraw energy bar
-            this.displayUpdatedEnergy();
-            // Has player already won?
-            this.checkWinCondition();
-        }
+        // Decrease energy required 
+        this.energyRequired /= 2;
+        // Redraw energy bar
+        this.displayUpdatedEnergy();
+        // Has player already won?
+        this.checkWinCondition();
     }
 
-    debugGetAllWords() {
-        this.letterPieces.debugGetAllWords();
+    showFoundWords() {
+        this.whiteOutArea(15, 495, 1000, 1000);
+
+        this.context.textAlign = "left";
+        this.context.font = '12px system-ui';
+        this.context.fillStyle = 'black';
+
+        let x = 20;
+        let y = 500;
+        for (const word of this.letterPieces.internalValidWords.words) {
+            if (word.isFound) {
+                this.context.fillText(word.letters, x, y);
+            }
+            x += 88;
+            if ( x > 930) {
+                x = 20;
+                y+= 25;
+            }
+        }
     }
 }
 
+const description =  "Find as many anagrams of Nestor's name as you can.  You get half a point of energy for every letter you use.  You can only use each letter once in each word.  Words must be between 3 and 6 letters long.";
 const c = document.getElementsByTagName('canvas')[0];
-let board = new Board("ORSTNE", c);
-board.draw();
+const board = new Board("ORSTNE", c);
+const map = new StoryMap(simplifyGame, description);
+const imgBorder = loadImage('../images/border.png', main);
+const imageCount = 1;
+
+let imagesLoaded = 0;
+function main() {
+    imagesLoaded += 1;
+    if (imagesLoaded == imageCount) {
+        c.getContext("2d").drawImage(imgBorder, 0, 0);
+        board.draw();
+    }
+}
+
+function loadImage(src, onload) {
+    const img = new Image();
+    img.onload = onload;
+    img.src = src;
+    return img;
+}
 
 c.addEventListener("pointerdown", handlePointerDown, false);
 c.addEventListener("pointerup", handlePointerUp, false);
@@ -526,7 +535,10 @@ c.addEventListener("pointermove", handlePointerMove, false);
 c.addEventListener("pointercancel", handlePointerCancel, false);
 c.addEventListener("pointerout", handlePointerCancel, false);
 c.addEventListener("pointerleave", handlePointerCancel, false);
-// document.getElementById('findButton').addEventListener('click', handleFindClick, false);
+
+function simplifyGame() {
+    board.simplifyGame();
+}
 
 function handlePointerDown(evt) {
     if (!evt.isPrimary) return;
@@ -544,8 +556,4 @@ function handlePointerUp(evt) {
 
 function handlePointerCancel(evt) {
     board.pointerCancel();
-}
-
-function handleFindClick(evt) {
-    board.debugGetAllWords();
 }
