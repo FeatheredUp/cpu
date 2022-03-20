@@ -2138,7 +2138,6 @@ let words4 = [
 ,'rein'
 ,'rely'
 ,'rend'
-,'reno'
 ,'rent'
 ,'repo'
 ,'reps'

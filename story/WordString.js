@@ -185,7 +185,7 @@ class LetterPieces {
     }
 }
 
-class Gauge {
+class VerticalGauge {
     context;
     energyX = 920;
     energyY = 55;
@@ -208,7 +208,8 @@ class Gauge {
 
         let ypos = this.energyY + this.energyHeight;
         this.context.textAlign = "right";
-        this.context.font = '10px system-ui';
+        //this.context.font = '10px system-ui';
+        this.context.font = '8px Verdana, sans-serif';
         this.context.fillStyle = 'black';
         for (let index = 0; index <= 10; index++) {
             this.context.fillText(index * 10, this.energyX - 5, ypos);
@@ -217,12 +218,10 @@ class Gauge {
         this.context.textAlign = "center";
     }
 
-
     displayUpdatedEnergy(energy, energyRequired) {
         // white out energy bar
         this.whiteOutArea(this.energyX, this.energyY, this.energyWidth, this.energyHeight);
 
-        //let energy = this.letterPieces.getEnergy();
         if (energy > 100) energy = 100;
 
         const height = energy * 4;
@@ -275,6 +274,86 @@ class Gauge {
     }
 }
 
+class HorizontalGauge {
+    energyX = 100;
+    energyY = 550;
+    energyWidth = 400;
+    energyHeight = 25;
+
+    constructor(context) {
+        this.context = context;
+    }
+
+    drawEmptyEnergyBar() {
+        this.context.strokeStyle = 'black';
+        this.context.fillStyle = 'white';
+        this.context.lineWidth = 1;
+        this.context.beginPath();
+        this.context.rect(this.energyX - 1, this.energyY - 1, this.energyWidth + 2, this.energyHeight + 2);
+        this.context.closePath();
+        this.context.fill();
+        this.context.stroke();
+
+        let xpos = this.energyX + 7;
+        this.context.textAlign = "right";
+        this.context.font = '10px Verdana, sans-serif';
+        this.context.fillStyle = 'black';
+        for (let index = 0; index <= 10; index++) {
+            this.context.fillText(index * 10, xpos, this.energyY - 10);
+            xpos += 40;
+        }
+        this.context.textAlign = "center";
+    }
+
+    displayUpdatedEnergy(energy, energyRequired) {
+        // white out energy bar
+        this.whiteOutArea(this.energyX, this.energyY, this.energyWidth, this.energyHeight);
+
+        if (energy > 100) energy = 100;
+
+        const width = energy * 4;
+
+        // the energy itself
+        this.context.fillStyle = 'yellow';
+        this.context.lineWidth = 1;
+        this.context.beginPath();
+        this.context.rect(this.energyX, this.energyY, width, this.energyHeight, 12);
+        this.context.closePath();
+        this.context.fill();
+
+        // Line at the top of the bar
+        this.mark(this.energyX + this.energyWidth, 'black');
+
+        // line at the top of the energy
+        if (energy > 0) {
+            this.mark(this.energyX + width, 'black');
+        }
+
+        // line at the energy required
+        const maxWidth = energyRequired * 4;
+        const maxPos = this.energyX + maxWidth;
+        this.mark(maxPos, 'red');
+    }
+
+    mark(position, colour) {
+        this.context.strokeStyle = colour;
+        this.context.beginPath();
+        this.context.moveTo(position + 1, this.energyY);
+        this.context.lineTo(position + 1, this.energyY + this.energyHeight);
+        this.context.closePath();
+        this.context.stroke();
+
+    }
+
+    whiteOutArea(startX, startY, width, height) {
+        this.context.beginPath();
+        this.context.fillStyle = 'white';
+        this.context.rect(startX, startY, width, height, 12);
+        this.context.closePath();
+        this.context.fill();
+    }
+}
+
 class Board {
     radius = 30;
     pieces = [];
@@ -296,7 +375,7 @@ class Board {
         this.context.textBaseline = "middle";
         this.context.font = '20px Verdana, sans-serif';
         this.whiteBackground();
-        this.gauge = new Gauge(this.context);
+        this.gauge = new HorizontalGauge(this.context);
 
         for (const letter of letters) {
             const centre = this.getCentre(this.pieces.length);
@@ -335,7 +414,7 @@ class Board {
         }
         this.context.drawImage(imgBorder, 0, 0);
         this.gauge.drawEmptyEnergyBar();
-        this.gauge.displayUpdatedEnergy(this.letterPieces.getEnergy());
+        this.gauge.displayUpdatedEnergy(this.letterPieces.getEnergy(), this.energyRequired);
     }
 
     getCentre(pos) {
@@ -357,11 +436,6 @@ class Board {
 
     pointerDown(clientPoint, pointerId) {
         const pt = clientPoint.convertFromPageToCanvas(c);
-
-        // if (this.isSimplifyButton(pt)) {
-        //     this.simplifyGame();
-        //     return;
-        // }
 
         this.originalImageData = this.context.getImageData(0, 0, this.canvas.width, this.canvas.height);
         this.saveBoard();
@@ -394,8 +468,8 @@ class Board {
             this.checkWinCondition();
         }
         this.resetBoard();
-        this.gauge.displayUpdatedEnergy(this.letterPieces.getEnergy());
-        this.showFoundWords();
+        this.gauge.displayUpdatedEnergy(this.letterPieces.getEnergy(), this.energyRequired);
+        this.showFoundWords(word);
         this.pointerId = null;
     }
 
@@ -490,30 +564,52 @@ class Board {
         // Decrease energy required 
         this.energyRequired /= 2;
         // Redraw energy bar
-        this.gauge.displayUpdatedEnergy();
+        this.gauge.displayUpdatedEnergy(this.letterPieces.getEnergy(), this.energyRequired);
         // Has player already won?
         this.checkWinCondition();
     }
 
-    showFoundWords() {
-        this.whiteOutArea(15, 495, 970, 140);
+    showFoundWords(currentWord) {
 
         this.context.textAlign = "left";
-        this.context.font = '12px system-ui';
+        this.context.font = '12px Verdana, sans-serif';
         this.context.fillStyle = 'black';
 
-        let x = 20;
-        let y = 500;
+        const initialX = 550;
+        const initialY = 70;
+        const wordWidth = 85;
+        const wordHeight = 25;
+        const maxX = 910;
+        const maxY = 620;
+
+        this.whiteOutArea(initialX, initialY, maxX - initialX, maxY - initialY);
+
+        let x = initialX;
+        let y = initialY;
+
+        this.context.fillText('Discovered words:', x, y);
+        y += wordHeight;
+        y += wordHeight;
+
+        //let maxScore = 0;
+        //let score = 0;
         for (const word of this.letterPieces.internalValidWords.words) {
+            //maxScore += word.letters.length;
             if (word.isFound) {
+                this.context.fillStyle = word.letters == currentWord ? 'red' : 'black';
+
+                //score += word.letters.length;
                 this.context.fillText(word.letters, x, y);
             }
-            x += 88;
-            if ( x > 930) {
-                x = 20;
-                y+= 25;
+            x += wordWidth;
+            if ( x > maxX) {
+                x = initialX;
+                y += wordHeight;
             }
         }
+        this.context.fillStyle = 'black';
+
+        //this.context.fillText(score + " out of " + maxScore, initialX, y + wordHeight);
     }
 }
 
