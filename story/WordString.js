@@ -185,77 +185,15 @@ class LetterPieces {
     }
 }
 
-class Board {
-    radius = 30;
-    pieces = [];
-    canvas = null;
-    context = null;
-    imageData = null;
-    originalImageData = null;
-    lastLockPoint = null;
-    selectedPieces = [];
-    pointerId = null;
-    letterPieces = null;
-    energyRequired = 100;
+class Gauge {
+    context;
     energyX = 920;
     energyY = 55;
-    energyHeight = 400;
     energyWidth = 25;
+    energyHeight = 400;
 
-    constructor(letters, canvas) {
-        this.canvas = canvas;
-        this.context = this.canvas.getContext("2d");
-        this.context.textAlign = "center";
-        this.context.textBaseline = "middle";
-        this.context.font = '20px Verdana, sans-serif';
-        this.whiteBackground();
-
-        for (const letter of letters) {
-            const centre = this.getCentre(this.pieces.length);
-            const piece = new Piece(letter, centre);
-            this.pieces.push(piece);
-        }
-
-        this.letterPieces = new LetterPieces(letters);
-    }
-
-    whiteBackground() {
-        this.context.beginPath();
-        this.context.fillStyle = 'white';
-        this.context.rect(0, 0, this.canvas.width, this.canvas.height);
-        this.context.closePath();
-        this.context.fill();
-        this.context.fillStyle = 'black';
-    }
-
-    findPiece(pt) {
-        for (const piece of this.pieces) {
-            if (piece.centre.x - this.radius <= pt.x && pt.x <= piece.centre.x + this.radius && 
-                piece.centre.y - this.radius <= pt.y && pt.y <= piece.centre.y + this.radius) {
-                    return piece;
-            }
-        }
-        return null;
-    }
-
-    draw() {
-        const imgBorder = loadImage('../images/border.png', main);
-        const info = map.getCurrentPageInfo();
-        const divisionFromSimplification = Math.pow(2, info.simplifies);
-        this.energyRequired /= divisionFromSimplification;
-
-        for (const piece of this.pieces) {
-            piece.draw(this.context, this.radius);
-        }
-        this.context.drawImage(imgBorder, 0, 0);
-        this.drawEmptyEnergyBar();
-        this.displayUpdatedEnergy();
-    }
-
-    loadImage(src) {
-        const img = new Image();
-        img.src = src;
-        return img;
+    constructor(context) {
+        this.context = context;
     }
 
     drawEmptyEnergyBar() {
@@ -277,6 +215,127 @@ class Board {
             ypos -= 40;
         }
         this.context.textAlign = "center";
+    }
+
+
+    displayUpdatedEnergy(energy, energyRequired) {
+        // white out energy bar
+        this.whiteOutArea(this.energyX, this.energyY, this.energyWidth, this.energyHeight);
+
+        //let energy = this.letterPieces.getEnergy();
+        if (energy > 100) energy = 100;
+
+        const height = energy * 4;
+        const bottom = this.energyY + this.energyHeight;
+        const top = bottom - height;
+
+        // the energy itself
+        this.context.fillStyle = 'yellow';
+        this.context.lineWidth = 1;
+        this.context.beginPath();
+        this.context.rect(this.energyX, top, this.energyWidth, height, 12);
+        this.context.closePath();
+        this.context.fill();
+
+        // Line at the top of the bar
+        this.context.strokeStyle = 'black';
+        this.context.beginPath();
+        this.context.moveTo(this.energyX, this.energyY - 1);
+        this.context.lineTo(this.energyX + this.energyWidth, this.energyY - 1);
+        this.context.closePath();
+        this.context.stroke();
+
+        // line at the top of the energy
+        if (energy > 0) {
+            this.context.strokeStyle = 'black';
+            this.context.beginPath();
+            this.context.moveTo(this.energyX, top - 1);
+            this.context.lineTo(this.energyX + this.energyWidth, top - 1);
+            this.context.closePath();
+            this.context.stroke();
+        }
+
+        // line at the energy required
+        const maxHeight = energyRequired * 4;
+        const maxPos = bottom - maxHeight;
+        this.context.strokeStyle = 'red';
+        this.context.beginPath();
+        this.context.moveTo(this.energyX, maxPos - 1);
+        this.context.lineTo(this.energyX + this.energyWidth, maxPos - 1);
+        this.context.closePath();
+        this.context.stroke();
+    }
+
+    whiteOutArea(startX, startY, width, height) {
+        this.context.beginPath();
+        this.context.fillStyle = 'white';
+        this.context.rect(startX, startY, width, height, 12);
+        this.context.closePath();
+        this.context.fill();
+    }
+}
+
+class Board {
+    radius = 30;
+    pieces = [];
+    canvas = null;
+    context = null;
+    imageData = null;
+    originalImageData = null;
+    lastLockPoint = null;
+    selectedPieces = [];
+    pointerId = null;
+    letterPieces = null;
+    energyRequired = 100;
+    gauge;
+
+    constructor(letters, canvas) {
+        this.canvas = canvas;
+        this.context = this.canvas.getContext("2d");
+        this.context.textAlign = "center";
+        this.context.textBaseline = "middle";
+        this.context.font = '20px Verdana, sans-serif';
+        this.whiteBackground();
+        this.gauge = new Gauge(this.context);
+
+        for (const letter of letters) {
+            const centre = this.getCentre(this.pieces.length);
+            const piece = new Piece(letter, centre);
+            this.pieces.push(piece);
+        }
+
+        this.letterPieces = new LetterPieces(letters);
+        const info = map.getCurrentPageInfo();
+        const divisionFromSimplification = Math.pow(2, info.simplifies);
+        this.energyRequired /= divisionFromSimplification;
+    }
+
+    whiteBackground() {
+        this.context.beginPath();
+        this.context.fillStyle = 'white';
+        this.context.rect(0, 0, this.canvas.width, this.canvas.height);
+        this.context.closePath();
+        this.context.fill();
+        this.context.fillStyle = 'black';
+    }
+
+    findPiece(pt) {
+        for (const piece of this.pieces) {
+            if (piece.centre.x - this.radius <= pt.x && pt.x <= piece.centre.x + this.radius && 
+                piece.centre.y - this.radius <= pt.y && pt.y <= piece.centre.y + this.radius) {
+                    return piece;
+            }
+        }
+        return null;
+    }
+
+    initialDraw(imgBorder) {
+        for (const piece of this.pieces) {
+            piece.draw(this.context, this.radius);
+        }
+        this.context.drawImage(imgBorder, 0, 0);
+        this.gauge.drawEmptyEnergyBar();
+        this.gauge.displayUpdatedEnergy(this.letterPieces.getEnergy());
     }
 
     getCentre(pos) {
@@ -335,7 +394,7 @@ class Board {
             this.checkWinCondition();
         }
         this.resetBoard();
-        this.displayUpdatedEnergy();
+        this.gauge.displayUpdatedEnergy(this.letterPieces.getEnergy());
         this.showFoundWords();
         this.pointerId = null;
     }
@@ -412,58 +471,10 @@ class Board {
     
     whiteOutArea(startX, startY, width, height) {
         this.context.beginPath();
-        this.context.fillStyle = 'white';
+        this.context.fillStyle = 'yellow';
         this.context.rect(startX, startY, width, height, 12);
         this.context.closePath();
         this.context.fill();
-    }
-
-    displayUpdatedEnergy() {
-        // white out energy bar
-        this.whiteOutArea(this.energyX, this.energyY, this.energyWidth, this.energyHeight);
-
-        let energy = this.letterPieces.getEnergy();
-        if (energy > 100) energy = 100;
-
-        const height = energy * 4;
-        const bottom = this.energyY + this.energyHeight;
-        const top = bottom - height;
-
-        // the energy itself
-        this.context.fillStyle = 'yellow';
-        this.context.lineWidth = 1;
-        this.context.beginPath();
-        this.context.rect(this.energyX, top, this.energyWidth, height, 12);
-        this.context.closePath();
-        this.context.fill();
-
-        // Line at the top of the bar
-        this.context.strokeStyle = 'black';
-        this.context.beginPath();
-        this.context.moveTo(this.energyX, this.energyY - 1);
-        this.context.lineTo(this.energyX + this.energyWidth, this.energyY - 1);
-        this.context.closePath();
-        this.context.stroke();
-
-        // line at the top of the energy
-        if (energy > 0) {
-            this.context.strokeStyle = 'black';
-            this.context.beginPath();
-            this.context.moveTo(this.energyX, top - 1);
-            this.context.lineTo(this.energyX + this.energyWidth, top - 1);
-            this.context.closePath();
-            this.context.stroke();
-        }
-
-        // line at the energy required
-        const maxHeight = this.energyRequired * 4;
-        const maxPos = bottom - maxHeight;
-        this.context.strokeStyle = 'red';
-        this.context.beginPath();
-        this.context.moveTo(this.energyX, maxPos - 1);
-        this.context.lineTo(this.energyX + this.energyWidth, maxPos - 1);
-        this.context.closePath();
-        this.context.stroke();
     }
 
     resetBoard() {
@@ -479,13 +490,13 @@ class Board {
         // Decrease energy required 
         this.energyRequired /= 2;
         // Redraw energy bar
-        this.displayUpdatedEnergy();
+        this.gauge.displayUpdatedEnergy();
         // Has player already won?
         this.checkWinCondition();
     }
 
     showFoundWords() {
-        this.whiteOutArea(15, 495, 1000, 1000);
+        this.whiteOutArea(15, 495, 970, 140);
 
         this.context.textAlign = "left";
         this.context.font = '12px system-ui';
@@ -508,8 +519,8 @@ class Board {
 
 const description =  "Find as many anagrams of Nestor's name as you can.  You get half a point of energy for every letter you use.  You can only use each letter once in each word.  Words must be between 3 and 6 letters long.";
 const c = document.getElementsByTagName('canvas')[0];
-const board = new Board("ORSTNE", c);
 const map = new StoryMap(simplifyGame, description);
+const board = new Board("ORSTNE", c);
 const imgBorder = loadImage('../images/border.png', main);
 const imageCount = 1;
 
@@ -517,8 +528,7 @@ let imagesLoaded = 0;
 function main() {
     imagesLoaded += 1;
     if (imagesLoaded == imageCount) {
-        c.getContext("2d").drawImage(imgBorder, 0, 0);
-        board.draw();
+        board.initialDraw(imgBorder);
     }
 }
 
