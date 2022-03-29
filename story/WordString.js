@@ -35,12 +35,8 @@ class Piece {
         this.letter = letter;
     }
 
-    draw(context, radius) {
-        context.beginPath();
-        context.roundRect(this.centre.x - radius, this.centre.y - radius, 2 * radius, 2 * radius, 12);
-        context.closePath();
-        context.stroke();
-
+    draw(context) {
+        context.fillStyle = '#CCCCCC';
         context.fillText(this.letter, this.centre.x, this.centre.y);
     }
 }
@@ -57,6 +53,80 @@ class Word {
     found() {
         this.isFound = true;
         this.energyStore.energy += this.letters.length;
+    }
+}
+
+class WordPanel {
+    context;
+    initialX;
+    initialY;
+    maxX;
+    maxY;
+    imageData;
+
+    constructor(context, initialX, initialY, maxX, maxY) {
+        this.context = context;
+        this.initialX = initialX;
+        this.initialY = initialY;
+        this.maxX = maxX;
+        this.maxY = maxY;
+    }
+
+    showFoundWords(letterPieces, currentWord) {
+        this.context.textAlign = "left";
+        this.context.textBaseline = "top";
+        const wordWidth = 80;
+        const wordHeight = 25;
+        const leftIndent = this.initialX + 20;
+
+        if (currentWord == '') {
+            this.imageData = this.context.getImageData(this.initialX, this.initialY, this.maxX - this.initialX, this.maxY - this.initialY);
+        } else {
+            this.context.putImageData(this.imageData, this.initialX, this.initialY)
+        }
+
+        let x = leftIndent;
+        let y = this.initialY + 10;
+        this.context.fillStyle = 'teal';
+        this.context.font = '16px Verdana, sans-serif';
+        this.context.fillText('Words found', x, y);
+        y += 10;
+
+        const groupedWords = this.groupByWordLength(letterPieces.internalValidWords.words);
+        this.context.font = '12px Verdana, sans-serif';
+        for (let wordLength = 7; wordLength > 2; wordLength--) {
+            const group = groupedWords[wordLength];
+            if (group) {
+                this.context.fillStyle = 'teal';
+                y += wordHeight;
+                x = leftIndent;
+                this.context.fillText(wordLength + '-letter words (' + group.length + ' possible words)', x, y);
+                y += wordHeight;
+
+                for (const word of group) {
+                    if (word.isFound) {
+                        this.context.fillStyle = word.letters == currentWord ? 'red' : 'white';
+                        this.context.fillText(word.letters, x, y);
+                    }
+                    x += wordWidth;
+                    if ( x > this.maxX) {
+                        x = leftIndent;
+                        y += wordHeight;
+                    }
+
+                }
+            }
+        }
+
+        this.context.textBaseline = "middle";
+    }
+
+    groupByWordLength(list) {
+        let temp = {};
+        list.map(function (item) {
+             !temp.hasOwnProperty(item.letters.length) ? temp[item.letters.length] = [item] : temp[item.letters.length].push(item);
+        });
+        return temp;
     }
 }
 
@@ -208,7 +278,6 @@ class VerticalGauge {
 
         let ypos = this.energyY + this.energyHeight;
         this.context.textAlign = "right";
-        //this.context.font = '10px system-ui';
         this.context.font = '8px Verdana, sans-serif';
         this.context.fillStyle = 'black';
         for (let index = 0; index <= 10; index++) {
@@ -272,11 +341,19 @@ class VerticalGauge {
         this.context.closePath();
         this.context.fill();
     }
+
+    blackOutArea(startX, startY, width, height) {
+        this.context.beginPath();
+        this.context.fillStyle = 'black';
+        this.context.rect(startX, startY, width, height, 12);
+        this.context.closePath();
+        this.context.fill();
+    }
 }
 
 class HorizontalGauge {
-    energyX = 100;
-    energyY = 550;
+    energyX = 75;
+    energyY = 560;
     energyWidth = 400;
     energyHeight = 25;
 
@@ -297,7 +374,7 @@ class HorizontalGauge {
         let xpos = this.energyX + 7;
         this.context.textAlign = "right";
         this.context.font = '10px Verdana, sans-serif';
-        this.context.fillStyle = 'black';
+        this.context.fillStyle = 'white';
         for (let index = 0; index <= 10; index++) {
             this.context.fillText(index * 10, xpos, this.energyY - 10);
             xpos += 40;
@@ -367,6 +444,7 @@ class Board {
     letterPieces = null;
     energyRequired = 100;
     gauge;
+    wordPanel;
 
     constructor(letters, canvas) {
         this.canvas = canvas;
@@ -376,6 +454,7 @@ class Board {
         this.context.font = '20px Verdana, sans-serif';
         this.whiteBackground();
         this.gauge = new HorizontalGauge(this.context);
+        this.wordPanel = new WordPanel(this.context, 560, 35, 960, 610);
 
         for (const letter of letters) {
             const centre = this.getCentre(this.pieces.length);
@@ -408,22 +487,24 @@ class Board {
         return null;
     }
 
-    initialDraw(imgBorder) {
+    initialDraw(imgBorder, imgBackground) {
+        this.context.drawImage(imgBackground, 0, 0);
+        this.context.drawImage(imgBorder, 0, 0);
         for (const piece of this.pieces) {
             piece.draw(this.context, this.radius);
         }
-        this.context.drawImage(imgBorder, 0, 0);
         this.gauge.drawEmptyEnergyBar();
         this.gauge.displayUpdatedEnergy(this.letterPieces.getEnergy(), this.energyRequired);
+        this.wordPanel.showFoundWords(this.letterPieces, '');
     }
 
     getCentre(pos) {
-        if (pos === 0) return new Point(300, 120);
-        if (pos === 1) return new Point(200, 200);
-        if (pos === 2) return new Point(400, 200);
-        if (pos === 3) return new Point(200, 300);
-        if (pos === 4) return new Point(400, 300);
-        if (pos === 5) return new Point(300, 380);
+        if (pos === 0) return new Point(283, 171);
+        if (pos === 1) return new Point(184, 234);
+        if (pos === 2) return new Point(381, 234);
+        if (pos === 3) return new Point(184, 340);
+        if (pos === 4) return new Point(381, 340);
+        if (pos === 5) return new Point(283, 397);
     }
 
     saveBoard() {
@@ -469,7 +550,7 @@ class Board {
         }
         this.resetBoard();
         this.gauge.displayUpdatedEnergy(this.letterPieces.getEnergy(), this.energyRequired);
-        this.showFoundWords(word);
+        this.wordPanel.showFoundWords(this.letterPieces, word);
         this.pointerId = null;
     }
 
@@ -486,6 +567,7 @@ class Board {
     }
     
     touchPoint(pt) {
+        document.getElementById('debugText').innerHTML = '('+pt.x+','+pt.y+')'
         const piece = this.findPiece(pt);
     
         if (piece) {
@@ -530,22 +612,32 @@ class Board {
 
         this.context.font = '20px Verdana, sans-serif';
         this.context.strokeStyle = 'black';
-        this.context.fillStyle = 'white';
+        this.context.fillStyle = 'black';
         this.context.textAlign = "center";
         this.context.lineWidth = 1;
         this.context.beginPath();
-        this.context.roundRect(200, 25, 200, 50, 12);
+        //this.context.roundRect(200, 25, 200, 50, 12);
+        this.context.rect(187, 78, 185, 38);
         this.context.closePath();
         this.context.fill();
         this.context.stroke();
 
-        this.context.fillStyle = 'black';
-        this.context.fillText(word, 300, 50);
+        this.context.fillStyle = 'white';
+        //this.context.fillText(word, 300, 50);
+        this.context.fillText(word, 287, 98);
     }
     
     whiteOutArea(startX, startY, width, height) {
         this.context.beginPath();
         this.context.fillStyle = 'white';
+        this.context.rect(startX, startY, width, height, 12);
+        this.context.closePath();
+        this.context.fill();
+    }
+
+    blackOutArea(startX, startY, width, height) {
+        this.context.beginPath();
+        this.context.fillStyle = 'black';
         this.context.rect(startX, startY, width, height, 12);
         this.context.closePath();
         this.context.fill();
@@ -568,49 +660,6 @@ class Board {
         // Has player already won?
         this.checkWinCondition();
     }
-
-    showFoundWords(currentWord) {
-
-        this.context.textAlign = "left";
-        this.context.font = '12px Verdana, sans-serif';
-        this.context.fillStyle = 'black';
-
-        const initialX = 550;
-        const initialY = 70;
-        const wordWidth = 85;
-        const wordHeight = 25;
-        const maxX = 910;
-        const maxY = 620;
-
-        this.whiteOutArea(initialX, initialY, maxX - initialX, maxY - initialY);
-
-        let x = initialX;
-        let y = initialY;
-
-        this.context.fillText('Discovered words:', x, y);
-        y += wordHeight;
-        y += wordHeight;
-
-        //let maxScore = 0;
-        //let score = 0;
-        for (const word of this.letterPieces.internalValidWords.words) {
-            //maxScore += word.letters.length;
-            if (word.isFound) {
-                this.context.fillStyle = word.letters == currentWord ? 'red' : 'black';
-
-                //score += word.letters.length;
-                this.context.fillText(word.letters, x, y);
-            }
-            x += wordWidth;
-            if ( x > maxX) {
-                x = initialX;
-                y += wordHeight;
-            }
-        }
-        this.context.fillStyle = 'black';
-
-        //this.context.fillText(score + " out of " + maxScore, initialX, y + wordHeight);
-    }
 }
 
 const description =  "Find as many anagrams of Nestor's name as you can.  You get half a point of energy for every letter you use.  You can only use each letter once in each word.  Words must be between 3 and 6 letters long.";
@@ -618,13 +667,14 @@ const c = document.getElementsByTagName('canvas')[0];
 const map = new StoryMap(simplifyGame, description);
 const board = new Board("ORSTNE", c);
 const imgBorder = loadImage('../images/border.png', main);
-const imageCount = 1;
+const imgBackground = loadImage('../images/vault.png', main);
+const imageCount = 2;
 
 let imagesLoaded = 0;
 function main() {
     imagesLoaded += 1;
     if (imagesLoaded == imageCount) {
-        board.initialDraw(imgBorder);
+        board.initialDraw(imgBorder, imgBackground);
     }
 }
 
