@@ -90,10 +90,17 @@ class WordPanel {
         this.context.fillStyle = 'teal';
         this.context.font = '16px Verdana, sans-serif';
         this.context.fillText('Words found', x, y);
+        y += wordHeight;
+        this.context.font = '10px Verdana, sans-serif';
+        this.context.fillStyle = 'white';
+        this.context.fillText('Search for words from the letters in Nestor\'s name.', x, y);
+        y += 15;
+        this.context.fillText('Words you find will appear below in alphabetical order, grouped by length.', x, y);
         y += 10;
 
         const groupedWords = this.groupByWordLength(letterPieces.internalValidWords.words);
         this.context.font = '12px Verdana, sans-serif';
+        this.context.fillStyle = 'teal';
         for (let wordLength = 7; wordLength > 2; wordLength--) {
             const group = groupedWords[wordLength];
             if (group) {
