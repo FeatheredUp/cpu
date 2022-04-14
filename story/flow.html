@@ -1,17 +1,19 @@
 <html>
     <head>
         <script src="game.js?1"></script>
-        <script src="flowerbedBoard.js"></script>
+        <script src="flowGraphics.js"></script>
+        <script src="flowPuzzle.js"></script>
+        <script src="flowOptions.js"></script>
+        <script src="seedrandom.js"></script>
         <link rel="stylesheet" href="../site.css">
         <link rel="stylesheet" href="game.css">
-        <link rel="stylesheet" href="flowerbed.css">
     </head>
     <body>
         <div class="page">
             <canvas id="canvas" width="1000" height="650" class="mainArea"></canvas>
-            <button id="btnDone">Click when done</button>
+            <button id="btnDone" style="display:none;">Click when done</button>
             <img class="menu" id="menu" />
-            <script src="flowerbed.js?1"></script>
+            <script src="flow.js?1"></script>
         </div>
         <script>
             document.getElementById('btnDone').addEventListener("click", clickButton, false);

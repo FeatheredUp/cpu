@@ -183,6 +183,7 @@ class StoryMap {
     menu;
     helpDescription;
     isPuzzle = false;
+    extraHelpText= 'Press the yellow magnify button to show or hide this information.';
     constructor(simplifyFunction, helpDescription) {
         let json = localStorage.getItem('pages');
         if (!json) {
@@ -195,7 +196,8 @@ class StoryMap {
                     '{"name":"Flowerbed.html", "next":"CityMap.html?2", "isPuzzle": true}, ' +
                     '{"name":"CityMap.html?2", "next":"WordString.html"}, ' +
                     '{"name":"WordString.html", "next":"CityMap.html?3", "isPuzzle": true}, ' +
-                    '{"name":"CityMap.html?3", "next":""}]';
+                    '{"name":"CityMap.html?3", "next":"flow.html"}, ' +
+                    '{"name":"flow.html", "next":"", "isPuzzle": true}]';
             localStorage.setItem('pages', json);
 
         }
@@ -228,8 +230,50 @@ class StoryMap {
         this.helpDescription = helpDescription;
     }
 
+    initialiseHelp() {
+        let helpPanel = document.getElementsByClassName('helpPanel');
+        if (helpPanel?.length > 0) return; 
+
+        const page = document.getElementsByClassName('page')[0];
+        helpPanel = document.createElement('div');
+        helpPanel.className = 'helpPanel hidden';
+
+        const helpText = document.createElement('div');
+        helpText.className = 'helpPanelText';
+        helpPanel.appendChild(helpText);
+        
+        const helpTextExtra = document.createElement('div');
+        helpTextExtra.className = 'helpPanelTextExtra';
+        helpTextExtra.innerText = this.extraHelpText;
+        helpPanel.appendChild(helpTextExtra);
+
+        const button = document.createElement('button');
+        button.className = 'helpPanelButton';
+        button.innerText = 'OK';
+        button.addEventListener('click', (event) => {this.toggleHidden(helpPanel);}, false);
+
+        helpPanel.appendChild(button);
+
+        page.appendChild(helpPanel);
+    }
+
     showHelp() {
-        alert(this.helpDescription);
+        this.initialiseHelp();
+
+        const helpPanel = document.getElementsByClassName('helpPanel')[0];
+        this.toggleHidden(helpPanel);
+       
+        const helpText = document.getElementsByClassName('helpPanelText')[0];
+        helpText.innerText = this.helpDescription;
+    }
+
+    toggleHidden(control) { 
+        if (!control?.classList?.contains) return;
+        if (control.classList.contains('hidden')) {
+            control.classList.remove('hidden');
+        } else {
+            control.classList.add('hidden');
+        }
     }
 
     checkUnlock() {

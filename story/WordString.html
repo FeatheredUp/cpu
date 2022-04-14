@@ -13,9 +13,17 @@
         <div class="page">
             <canvas width="1000" height="650" style="touch-action:none;"></canvas>    
             <div id="debugText" style="display:none">HERE</div>     
+            <button id="btnDone">Click when done</button>
             <img class="menu" id="menu" />
             <script src="WordString.js"></script>
         </div>
+        <script>
+            document.getElementById('btnDone').addEventListener("click", clickButton, false);
+
+            function clickButton() {
+                map.unlockNext();
+            } 
+        </script>
     </body>
 </html>
 
