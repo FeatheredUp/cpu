@@ -60,14 +60,14 @@ class Piece {
     startX;
     startY;
 
-    GivenShipColour = '#373125';
-    ShipColour = '#6c5a30';
+    GivenShipColour = '#5252ff';
+    ShipColour = '#9292ff';
 
     GivenWaterColour = '#00FF00';
     WaterColour = '#009900';
 
-    UnknownColour = 'grey';
-    StrokeColour = '#6c5a30';
+    UnknownColour = '#6c5a30';
+    StrokeColour = 'black';
 
     constructor(board, row, column) {
         this.board = board;
@@ -255,7 +255,7 @@ class Board {
 
     side = 50;
     leftOffset = 250;
-    topOffset = 50;
+    topOffset = 76;
     borderWidth = 7;
     borderColour = '#f0f0f0';
 
@@ -333,8 +333,8 @@ class Board {
 
         // Display row and column totals
         for (let index = 0; index < this.size; index++) {
-            this.drawText(context, rowCount[index], this.leftOffset + this.side * this.size + this.side / 2, this.topOffset + this.side * index + this.side / 2);
-            this.drawText(context, colCount[index], this.leftOffset + this.side * index + this.side / 2, this.topOffset + this.side * this.size + this.side / 2);
+            this.drawText(context, rowCount[index], 3 + this.leftOffset + this.side * this.size + this.side / 2, this.topOffset + this.side * index + this.side / 2);
+            this.drawText(context, colCount[index], this.leftOffset + this.side * index + this.side / 2, 5 + this.topOffset + this.side * this.size + this.side / 2);
         }
     }
 
