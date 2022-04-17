@@ -2,21 +2,16 @@
     <head>
         <link rel="shortcut icon" type="image/jpg" href="../images/favicon.ico"/>
         <script src="game.js?1"></script>
-        <script src="words/3letters.js"></script>
-        <script src="words/4letters.js"></script>
-        <script src="words/5letters.js"></script>
-        <script src="words/6letters.js"></script>
-        <script src="words/7letters.js"></script>
+        <script src="libraries/fabric.min.js"></script>
         <link rel="stylesheet" href="../site.css">
         <link rel="stylesheet" href="game.css">
     </head>
     <body>
         <div class="page">
-            <canvas width="1000" height="650" style="touch-action:none;"></canvas>    
-            <div id="debugText" style="display:none">HERE</div>     
+            <canvas id="canvas" width="1000" height="650" class="mainArea"></canvas>
             <button id="btnDone">Click when done</button>
             <img class="menu" id="menu" />
-            <script src="WordString.js"></script>
+            <script src="tetriCross.js?1"></script>
         </div>
         <script>
             document.getElementById('btnDone').addEventListener("click", clickButton, false);
@@ -27,4 +22,3 @@
         </script>
     </body>
 </html>
-

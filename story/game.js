@@ -71,6 +71,7 @@ class Menu {
     buttons = [];
     simplifyFunction;
     highlightedButton = 'none';
+    duringClick = false;
     constructor(map, simplifyFunction) {
         this.simplifyFunction = simplifyFunction;
         this.map = map;
@@ -97,11 +98,13 @@ class Menu {
             canvasTop = this.menuHolder.offsetTop + this.menuHolder.clientTop,
             x = pageX - canvasLeft,
             y = pageY - canvasTop;
-       for (const button of this.buttons) {
-           if (button.isInBounds(x,y)) {
-               this.actOnButton(button.name);
-           }
-       }
+        for (const button of this.buttons) {
+            if (button.isInBounds(x,y)) {
+                this.hoverOnButton('none');
+                this.duringClick = true;
+                window.setTimeout(f => this.actOnButton(button.name), 100);
+            }
+        }
     } 
     
     mousemoveMenu(pageX, pageY) {
@@ -120,6 +123,7 @@ class Menu {
 
     hoverOnButton(buttonName) {
         if (this.highlightedButton == buttonName) return;
+        if (this.duringClick) return;
         this.highlightedButton = buttonName;
         if (map.isPuzzle){
             switch (buttonName) {
@@ -149,6 +153,7 @@ class Menu {
     }
 
     actOnButton(buttonName) {
+        this.duringClick = false;
         switch (buttonName) {
             case 'home':
                 this.map.goHome();
@@ -197,7 +202,8 @@ class StoryMap {
                     '{"name":"CityMap.html?2", "next":"WordString.html"}, ' +
                     '{"name":"WordString.html", "next":"CityMap.html?3", "isPuzzle": true}, ' +
                     '{"name":"CityMap.html?3", "next":"flow.html"}, ' +
-                    '{"name":"flow.html", "next":"", "isPuzzle": true}]';
+                    '{"name":"flow.html", "next":"tetriCross.html", "isPuzzle": true}, ' +
+                    '{"name":"tetriCross.html", "next":"", "isPuzzle": true}]';
             localStorage.setItem('pages', json);
 
         }
