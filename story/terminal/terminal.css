@@ -1,5 +1,5 @@
 #terminalScreen {
-    background-image : url("terminal border.png");
+    background-image : url("../../images/terminal border.png");
     background-repeat: no-repeat;
     background-color : black;
     color            : #03A062;

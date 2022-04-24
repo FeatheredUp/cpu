@@ -1,6 +1,6 @@
 const description =  "Description here.";
 
-const map = new StoryMap(clickHint, description);
+const game = new Game(clickHint, description);
 
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d');

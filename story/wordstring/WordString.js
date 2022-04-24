@@ -470,8 +470,7 @@ class Board {
         }
 
         this.letterPieces = new LetterPieces(letters);
-        const info = map.getCurrentPageInfo();
-        const divisionFromSimplification = Math.pow(2, info.simplifies);
+        const divisionFromSimplification = Math.pow(2, game.map.currentPage.simplifies);
         this.energyRequired /= divisionFromSimplification;
     }
 
@@ -564,7 +563,7 @@ class Board {
     checkWinCondition() {
         if (this.letterPieces.getEnergy() >= this.energyRequired) {
             alert ('Congratulations you have found enough words!');
-            map.unlockNext();
+            game.unlockNext();
         }
     }
 
@@ -671,7 +670,7 @@ class Board {
 
 const description =  "Find as many anagrams of Nestor's name as you can.  You get half a point of energy for every letter you use.  You can only use each letter once in each word.  Words must be between 3 and 6 letters long.";
 const c = document.getElementsByTagName('canvas')[0];
-const map = new StoryMap(simplifyGame, description);
+const game = new Game(simplifyGame, description);
 const board = new Board("ORSTNE", c);
 const imgBorder = loadImage('../images/border.png', main);
 const imgBackground = loadImage('../images/vault.png', main);

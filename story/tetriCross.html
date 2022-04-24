@@ -11,13 +11,13 @@
             <canvas id="canvas" width="1000" height="650" class="mainArea"></canvas>
             <button id="btnDone">Click when done</button>
             <img class="menu" id="menu" />
-            <script src="tetriCross.js?1"></script>
+            <script src="tetriCross/tetriCross.js?3"></script>
         </div>
         <script>
             document.getElementById('btnDone').addEventListener("click", clickButton, false);
 
             function clickButton() {
-                map.unlockNext();
+                game.unlockNext();
             } 
         </script>
     </body>

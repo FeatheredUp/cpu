@@ -66,19 +66,19 @@ class ClickableRoundArea {
 }
 
 class Menu {
-    map;
+    game;
     menuHolder;
     buttons = [];
     simplifyFunction;
     highlightedButton = 'none';
     duringClick = false;
-    constructor(map, simplifyFunction) {
+    constructor(game, simplifyFunction) {
         this.simplifyFunction = simplifyFunction;
-        this.map = map;
+        this.game = game;
         this.menuHolder = document.getElementById('menu');
         if (this.menuHolder == null || this.menuHolder == undefined) return;
 
-        if (map.isPuzzle)
+        if (game.isPuzzle)
             this.menuHolder.src = "../images/menu.png"
         else 
             this.menuHolder.src = "../images/menu2.png";
@@ -125,7 +125,7 @@ class Menu {
         if (this.highlightedButton == buttonName) return;
         if (this.duringClick) return;
         this.highlightedButton = buttonName;
-        if (map.isPuzzle){
+        if (this.game.map.currentPage.isPuzzle) {
             switch (buttonName) {
                 case 'home':
                     this.menuHolder.src = "../images/menu_home.png";
@@ -156,13 +156,13 @@ class Menu {
         this.duringClick = false;
         switch (buttonName) {
             case 'home':
-                this.map.goHome();
+                this.game.goHome();
                 return;
             case 'hint':
-                 if (map.isPuzzle) this.actOnHint();
+                 if (this.game.map.currentPage.isPuzzle) this.actOnHint();
                 return;
             case 'help' :
-                if (map.isPuzzle) this.map.showHelp();
+                if (this.game.map.currentPage.isPuzzle) this.game.showHelp();
                 return;
         }
     }
@@ -174,7 +174,7 @@ class Menu {
             return;
         }
 
-        const simplified = this.map.requestSimplify();
+        const simplified = this.game.requestSimplify();
         if (simplified) {
             // Now tell the current page that the simplify was activated
             if (this.simplifyFunction != null) this.simplifyFunction();
@@ -182,14 +182,11 @@ class Menu {
     }
 }
 
+
 class StoryMap {
     pages = [];
-    simplification;
-    menu;
-    helpDescription;
-    isPuzzle = false;
-    extraHelpText= 'Press the yellow magnify button to show or hide this information.';
-    constructor(simplifyFunction, helpDescription) {
+    currentPage = null;
+    constructor() {
         let json = localStorage.getItem('pages');
         if (!json) {
             json = '[{"name":"Terminal.html", "next":"Office.html?1", "isUnlocked":true},' +
@@ -205,7 +202,6 @@ class StoryMap {
                     '{"name":"flow.html", "next":"tetriCross.html", "isPuzzle": true}, ' +
                     '{"name":"tetriCross.html", "next":"", "isPuzzle": true}]';
             localStorage.setItem('pages', json);
-
         }
 
         console.log(json);
@@ -214,19 +210,73 @@ class StoryMap {
         for (const jsonPage of jsonMap) {
             const page = new Page(jsonPage.name, jsonPage.next, jsonPage.isUnlocked, jsonPage.simplifies, jsonPage.isPuzzle);
             this.pages.push(page);
+            
+            // Find last unlocked page
+            if (page.isUnlocked) this.currentPage = page;
         }
+    }
+    
+    getPage(name) {
+        for (const page of this.pages) {
+            if (page.name == name) return page;
+        }
+    }
+
+    save() {
+        const pages = JSON.stringify(this.pages);
+        localStorage.setItem('pages', pages);
+    }
+}
+
+class ListGames {
+    constructor() {
+        this.map = new StoryMap();
+        
+        const ul = document.createElement('ul');
+        for (const page of this.map.pages) {
+            if (page.isPuzzle) {
+                const a = document.createElement('a');
+                a.href = page.name + '?direct';
+                a.innerText = page.name;
+
+                const li = document.createElement('li');
+                li.appendChild(a);
+                ul.appendChild(li);
+            }
+        }
+        document.getElementById('list').appendChild(ul);
+    }
+}
+
+class Game {
+    simplification;
+    menu;
+    helpDescription;
+    isPuzzle = false;
+    extraHelpText= 'Press the yellow magnify button to show or hide this information.';
+    developerAccess = false;
+    currentPage = null;
+    map = null;
+
+    constructor(simplifyFunction, helpDescription) {
+        this.map = new StoryMap();
 
         // find latest place and if that's different than the current page, move them there
         const currentPageName = this.getCurrentPageName();
-        console.log(currentPageName);
-        const lastPage = this.getLastPage();
-        console.log(lastPage.name);
 
-        if (lastPage.name != currentPageName) {
-            window.location.href = lastPage.name;
+        if (currentPageName.toLowerCase() == 'list.html') {
+            this.displayPuzzleList();
+            return;
         }
 
-        this.isPuzzle = lastPage.isPuzzle;
+        if (this.goingDirect(currentPageName)) {
+            this.developerAccess = true;
+            this.map.currentPage = this.map.getPage(this.getJustCurrentPageName());
+        } else if (this.map.currentPage.name != currentPageName) {
+            window.location.href = this.map.currentPage.name;
+        }
+
+        this.isPuzzle = this.map.currentPage.isPuzzle;
 
         this.simplification = new Simplification();
 
@@ -263,6 +313,10 @@ class StoryMap {
         page.appendChild(helpPanel);
     }
 
+    goingDirect(currentPageName) {
+        return currentPageName.endsWith('?direct');
+    }
+
     showHelp() {
         this.initialiseHelp();
 
@@ -283,22 +337,23 @@ class StoryMap {
     }
 
     checkUnlock() {
-        const currentPageName = this.getCurrentPageName();
-        const currentPage = this.getPage(currentPageName);
-
-        if (currentPage && currentPage.isUnlocked) return;
+        if (this.developerAccess) return;
+        if (this.map.currentPage.isUnlocked) return;
         window.location.href = "error.html";
     }
 
     unlockNext() {
-        const currentPage = this.getCurrentPageInfo();
-        if (!currentPage) return "";
+        if (this.developerAccess) {
+            window.location.href = "list.html";
+            return;
+        }
 
-        const nextPageName = currentPage.next;
-        const nextPage = this.getPage(nextPageName);
-        if (!nextPage) return "";
+        const nextPageName = this.map.currentPage.next;
+        const nextPage = this.map.getPage(nextPageName);
+        if (!nextPage) return;
+
         nextPage.unlock();
-        this.save();
+        this.map.save();
         window.location.href = nextPageName;
     }
     
@@ -311,17 +366,11 @@ class StoryMap {
         const confirm = window.confirm(`Do you want to use a Simplify token to make this puzzle easier?\n You have ${this.simplification.count} Simplify token(s) currently.`);
         if (confirm) { 
             this.simplification.decrease();
-            const currentPage = this.getCurrentPageInfo();
-            currentPage.simplify();
-            this.save();
+            this.map.currentPage.simplify();
+            this.map.save();
         }
 
         return confirm;
-    }
-
-    getCurrentPageInfo() {
-        const currentPageName = this.getCurrentPageName();
-        return this.getPage(currentPageName);
     }
 
     goHome() {
@@ -345,24 +394,7 @@ class StoryMap {
         //return window.location.pathname.split("/").pop().split(".")[0];
     }
 
-    getPage(name) {
-        for (const page of this.pages) {
-            if (page.name == name) return page;
-        }
-    }
-
-    getLastPage() {
-        let unlockedPage = null;
-        // Find last unlocked page
-        for (const page of this.pages) {
-            if (page.isUnlocked) unlockedPage = page;
-        }
-
-        return unlockedPage;
-    }
-
-    save() {
-        const pages = JSON.stringify(this.pages);
-        localStorage.setItem('pages', pages);
+    getJustCurrentPageName() {
+        return window.location.href.split("/").pop().split('?')[0];
     }
 }

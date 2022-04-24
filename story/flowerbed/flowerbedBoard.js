@@ -64,9 +64,9 @@ class Piece {
     ShipColour = '#9292ff';
 
     GivenWaterColour = '#00FF00';
-    WaterColour = '#009900';
+    WaterColour = '#856d2c';
 
-    UnknownColour = '#6c5a30';
+    UnknownColour = '#997f37';
     StrokeColour = 'black';
 
     constructor(board, row, column) {
@@ -281,7 +281,6 @@ class Board {
         this.pieces[2][5].setShip();
 
         this.pieces[3][1].setShip().setGiven();
-        //this.pieces[3][2].setGiven();
         this.pieces[3][9].setShip();
 
         this.pieces[4][3].setShip().setGiven();

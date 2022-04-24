@@ -2,10 +2,10 @@
     <head>
         <link rel="shortcut icon" type="image/jpg" href="../images/favicon.ico"/>
         <script src="game.js?1"></script>
-        <script src="flowGraphics.js"></script>
-        <script src="flowPuzzle.js"></script>
-        <script src="flowOptions.js"></script>
-        <script src="seedrandom.js"></script>
+        <script src="flow/flowGraphics.js"></script>
+        <script src="flow/flowPuzzle.js"></script>
+        <script src="flow/flowOptions.js"></script>
+        <script src="libraries/seedrandom.js"></script>
         <link rel="stylesheet" href="../site.css">
         <link rel="stylesheet" href="game.css">
     </head>
@@ -14,13 +14,13 @@
             <canvas id="canvas" width="1000" height="650" class="mainArea"></canvas>
             <button id="btnDone">Click when done</button>
             <img class="menu" id="menu" />
-            <script src="flow.js?1"></script>
+            <script src="flow/flow.js?1"></script>
         </div>
         <script>
             document.getElementById('btnDone').addEventListener("click", clickButton, false);
 
             function clickButton() {
-                map.unlockNext();
+                game.unlockNext();
             } 
         </script>
     </body>
