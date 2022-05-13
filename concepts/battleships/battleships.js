@@ -35,8 +35,8 @@ function displayCompletion(result) {
     }
 }
 
-const imgBackground = loadImage('../images/flowerbed.png', main);
-const imgBorder = loadImage('../images/border.png', main);
+const imgBackground = loadImage('../../images/flowerbed.png', main);
+const imgBorder = loadImage('../../images/border.png', main);
 
 let imagesLoaded = 0;
 function main() {

@@ -40,7 +40,7 @@ canvas.addEventListener('mousemove', function (event) {mouseMoveCanvas(event.pag
 const context = canvas.getContext('2d');
 
 const img = new Image();   
-img.src = '../images/livingroom.jpg'; 
+img.src = '../../images/livingroom.jpg'; 
 img.addEventListener('load', function() { context.drawImage(img,0,0);}, false);
 
 updateItemList();

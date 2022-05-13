@@ -1,8 +1,8 @@
 var mainImage = document.getElementById('mainImage');
-mainImage.src = '../images/busy.jpg'; 
+mainImage.src = '../../images/busy.jpg'; 
 
 var popup = document.getElementById('popup');
-popup.src = "../images/dog.gif";
+popup.src = "../../images/dog.gif";
 
 let wasOverlaid = false;
 function overPicture(pageX, pageY) {

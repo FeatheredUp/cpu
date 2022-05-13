@@ -5,14 +5,14 @@ canvas.addEventListener('click', function (event) {clickCanvas(event.pageX, even
 const context = canvas.getContext('2d');
 
 const img = new Image();   
-img.src = '../images/livingroom.jpg'; 
+img.src = '../../images/livingroom.jpg'; 
 img.addEventListener('load', function() { context.drawImage(img,0,0);}, false);
 
 const zoomCanvas = document.getElementById('zoomCanvas');
 const zoomContext = zoomCanvas.getContext('2d');
 
 const zoomImg = new Image();   
-zoomImg.src = '../images/cushions.jpg'; 
+zoomImg.src = '../../images/cushions.jpg'; 
 zoomImg.addEventListener('load', function() { zoomContext.drawImage(zoomImg,0,0, 400, 200);}, false);
 document.getElementById("zoomAreaClose").addEventListener('click', function() {document.getElementById("zoomArea").classList.add('hidden')})
 

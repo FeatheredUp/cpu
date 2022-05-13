@@ -1,7 +1,7 @@
 
-const disconnectSound = new Audio('../sounds/disconnect.mp3');
-const ringingSound = new Audio('../sounds/calling.mp3');
-const beepSound = new Audio('../sounds/beep.mp3');
+const disconnectSound = new Audio('../../sounds/disconnect.mp3');
+const ringingSound = new Audio('../../sounds/calling.mp3');
+const beepSound = new Audio('../../sounds/beep.mp3');
 
 function digitPressed(ctrl) {
     let display = document.getElementById('display');

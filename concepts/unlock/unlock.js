@@ -99,7 +99,7 @@ function initialiseClickAreas() {
 }
 
 const img = new Image();   
-img.src = '../images/unlock.png'; 
+img.src = '../../images/unlock.png'; 
 img.addEventListener('load', function() { 
     context.drawImage(img,0,0);
     initialiseClickAreas();
