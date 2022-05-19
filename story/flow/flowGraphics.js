@@ -37,12 +37,15 @@ class Graphics {
     // Calculate the length of one side
     getSizes(colCount, rowCount) {
         if (this.shapeType == 'square') {
-            const cellWidth = 97; //(this.maxWidth - this.leftMargin - this.rightMargin) / colCount;
-            const cellHeight = 97 ; // (this.maxHeight - this.topMargin - this.bottomMargin) / rowCount;
-            const cellSide =  Math.min(cellWidth, cellHeight);
+            const cellSide =  85;
 
-            const effectiveWidth = (cellSide * colCount) + this.leftMargin + this.rightMargin;
-            const effectiveHeight = (cellSide * rowCount) + this.topMargin + this.bottomMargin;
+            const effectiveWidth = (cellSide * colCount);
+            const effectiveHeight = (cellSide * rowCount);
+
+            this.leftMargin = (this.maxWidth - effectiveWidth) / 2;
+            this.rightMargin = (this.maxWidth - effectiveWidth) / 2;
+            this.topMargin = (this.maxHeight - effectiveHeight) / 2;
+            this.bottomMargin = (this.maxHeight - effectiveHeight) / 2;
 
             return { cellSide: cellSide, effectiveWidth: effectiveWidth, effectiveHeight: effectiveHeight};
         }  

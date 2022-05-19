@@ -11,7 +11,7 @@ class Page {
     isUnlocked = false;
     simplifies = 0;
     isPuzzle = false;
-    constructor(name, next, isUnlocked, simplifies, isPuzzle) {
+    constructor(name, next, isPuzzle, isUnlocked, simplifies) {
         this.name = name;
         this.next = next;
         this.isUnlocked = isUnlocked;
@@ -25,6 +25,11 @@ class Page {
 
     simplify() {
         this.simplifies += 1;
+    }
+
+    updateProgress(isUnlocked, simplifies) {
+        this.isUnlocked = isUnlocked;
+        this.simplifies = simplifies ?? 0;
     }
 }
 
@@ -186,36 +191,47 @@ class Menu {
 class StoryMap {
     pages = [];
     currentPage = null;
+
     constructor() {
-        let json = localStorage.getItem('pages');
-        if (!json) {
-            json = '[{"name":"Terminal.html", "next":"Office.html?1", "isUnlocked":true},' +
-                    '{"name":"Office.html?1", "next":"Phone.html?1"}, ' +
-                    '{"name":"Phone.html?1", "next":"CityMap.html?1"}, ' +
-                    '{"name":"CityMap.html?1", "next":"Saberton.html?1"}, ' +
-                    '{"name":"Saberton.html?1", "next":"Saberton.html?2"}, ' +
-                    '{"name":"Saberton.html?2", "next":"Flowerbed.html"}, ' +
-                    '{"name":"Flowerbed.html", "next":"CityMap.html?2", "isPuzzle": true}, ' +
-                    '{"name":"CityMap.html?2", "next":"WordString.html"}, ' +
-                    '{"name":"WordString.html", "next":"CityMap.html?3", "isPuzzle": true}, ' +
-                    '{"name":"CityMap.html?3", "next":"flow.html"}, ' +
-                    '{"name":"flow.html", "next":"tetriCross.html", "isPuzzle": true}, ' +
-                    '{"name":"tetriCross.html", "next":"", "isPuzzle": true}]';
-            localStorage.setItem('pages', json);
+        this.createInitialMap();
+        let jsonProgress = localStorage.getItem('progress');
+        if (!jsonProgress) {
+            jsonProgress = '[{"name":"Terminal.html", "isUnlocked":true}]';
+            localStorage.setItem('progress', jsonProgress);
         }
 
-        console.log(json);
+        console.log(jsonProgress);
 
-        const jsonMap = JSON.parse(json);
-        for (const jsonPage of jsonMap) {
-            const page = new Page(jsonPage.name, jsonPage.next, jsonPage.isUnlocked, jsonPage.simplifies, jsonPage.isPuzzle);
-            this.pages.push(page);
-            
+        const progress = JSON.parse(jsonProgress);
+        for (const progressPage of progress) {
+            // find the correct item in pages
+            const page = this.pages.find((p) => p.name == progressPage.name);
+
+            // update the page with the prgress
+            if (page) {
+                page.updateProgress(progressPage.isUnlocked, page.simplifies);
+            }
+
             // Find last unlocked page
             if (page.isUnlocked) this.currentPage = page;
         }
     }
     
+    createInitialMap() {
+        this.pages.push(new Page('Terminal.html', 'Office.html?1'));
+        this.pages.push(new Page('Office.html?1', 'Phone.html?1'));
+        this.pages.push(new Page('Phone.html?1', 'CityMap.html?1'));
+        this.pages.push(new Page('CityMap.html?1', 'Saberton.html?1'));
+        this.pages.push(new Page('Saberton.html?1', 'Saberton.html?2'));
+        this.pages.push(new Page('Saberton.html?2', 'Flowerbed.html'));
+        this.pages.push(new Page('Flowerbed.html', 'CityMap.html?2', true));
+        this.pages.push(new Page('CityMap.html?2', 'WordString.html'));
+        this.pages.push(new Page('WordString.html', 'CityMap.html?3', true));
+        this.pages.push(new Page('CityMap.html?3', 'flow.html'));
+        this.pages.push(new Page('flow.html', 'tetriCross.html', true));
+        this.pages.push(new Page('tetriCross.html', '', true));
+    }
+
     getPage(name) {
         for (const page of this.pages) {
             if (page.name == name) return page;
@@ -223,8 +239,17 @@ class StoryMap {
     }
 
     save() {
-        const pages = JSON.stringify(this.pages);
-        localStorage.setItem('pages', pages);
+        const progress = this.mapToProgress();
+        const pages = JSON.stringify(progress);
+        localStorage.setItem('progress', pages);
+    }
+
+    mapToProgress() {
+        const progress = [];
+        for (const page of this.pages) {
+            if (page.isUnlocked) progress.push({name: page.name, isUnlocked: page.isUnlocked, simplifyCount: page.simplifies});
+        }
+        return progress;
     }
 }
 
