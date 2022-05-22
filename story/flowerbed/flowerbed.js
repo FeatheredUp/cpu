@@ -29,15 +29,12 @@ function displayCompletion(result) {
     }
 }
 
-const imgBackground = loadImage('../images/flowerbed.png', main);
-const imgBorder = loadImage('../images/border.png', main);
-
+const imgBackground = loadImage('flowerbed/flowerbed.png', main);
 let imagesLoaded = 0;
 function main() {
     imagesLoaded += 1;
-    if (imagesLoaded == 2) {
+    if (imagesLoaded == 1) {
         context.drawImage(imgBackground, 0, 0);
-        context.drawImage(imgBorder, 0, 0);
         board.draw(context);
     }
 }

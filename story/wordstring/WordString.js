@@ -493,9 +493,8 @@ class Board {
         return null;
     }
 
-    initialDraw(imgBorder, imgBackground) {
+    initialDraw(imgBackground) {
         this.context.drawImage(imgBackground, 0, 0);
-        this.context.drawImage(imgBorder, 0, 0);
         for (const piece of this.pieces) {
             piece.draw(this.context, this.radius);
         }
@@ -672,15 +671,14 @@ const description =  "Find as many anagrams of Nestor's name as you can.  You ge
 const c = document.getElementsByTagName('canvas')[0];
 const game = new Game(simplifyGame, description);
 const board = new Board("ORSTNE", c);
-const imgBorder = loadImage('../images/border.png', main);
-const imgBackground = loadImage('../images/vault.png', main);
-const imageCount = 2;
+const imgBackground = loadImage('wordstring/vault.png', main);
+const imageCount = 1;
 
 let imagesLoaded = 0;
 function main() {
     imagesLoaded += 1;
     if (imagesLoaded == imageCount) {
-        board.initialDraw(imgBorder, imgBackground);
+        board.initialDraw(imgBackground);
     }
 }
 

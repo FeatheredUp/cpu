@@ -26,17 +26,17 @@ const canvas = document.getElementById('canvas');
 const keyWordTextbox = createKeyWordTextbox(canvas, 'BLOOD');
 
 const f = new fabric.Canvas('canvas', { selection: false });
-setBackgroundImage('../images/tetriCross.png');
+setBackgroundImage('tetriCross/tetriCross.png');
 loadTiles();
 
 function clickHint() {
     hintCount += 1;
     if (hintCount == 1) {
-        setBackgroundImage('../images/tetriCross_hint1.png');
+        setBackgroundImage('tetriCross/tetriCross_hint1.png');
     } else if (hintCount == 2) {
         showTileHints();
     } else if (hintCount == 3) {
-        setBackgroundImage('../images/tetriCross_hint2.png');
+        setBackgroundImage('tetriCross/tetriCross_hint2.png');
     }else {
         alert('the keyword is BLOOD');
     }
@@ -69,15 +69,15 @@ function createKeyWordTextbox(c, answer) {
 }
 
 function loadTiles() {
-    loadImage('../images/tetri1.png', 1, 580, 70, 6, 1);
-    loadImage('../images/tetri2.png', 2, 760, 70, 6, 7);
-    loadImage('../images/tetri3.png', 3, 560, 170, 3, 2);
-    loadImage('../images/tetri4.png', 4, 760, 170, 1, 7);
-    loadImage('../images/tetri5.png', 5, 570, 290, 7, 4);
-    loadImage('../images/tetri6.png', 6, 760, 270, 3, 6);
-    loadImage('../images/tetri7.png', 7, 790, 470, 6, 4);
-    loadImage('../images/tetri8.png', 8, 760, 370, 2, 4);
-    loadImage('../images/tetri9.png', 9, 580, 470, 1, 1);
+    loadImage('tetriCross/tetri1.png', 1, 580, 70, 6, 1);
+    loadImage('tetriCross/tetri2.png', 2, 760, 70, 6, 7);
+    loadImage('tetriCross/tetri3.png', 3, 560, 170, 3, 2);
+    loadImage('tetriCross/tetri4.png', 4, 760, 170, 1, 7);
+    loadImage('tetriCross/tetri5.png', 5, 570, 290, 7, 4);
+    loadImage('tetriCross/tetri6.png', 6, 760, 270, 3, 6);
+    loadImage('tetriCross/tetri7.png', 7, 790, 470, 6, 4);
+    loadImage('tetriCross/tetri8.png', 8, 760, 370, 2, 4);
+    loadImage('tetriCross/tetri9.png', 9, 580, 470, 1, 1);
 }
 
 function loadImage(url, number, left, top, correctX, correctY) {
@@ -137,7 +137,7 @@ function lockTiles() {
 function showTileHints() {
     var tiles = f.getObjects();
     for (const tile of tiles) {
-        tile.setSrc('../images/tetri' + tile.number + '_hint.png', function(i) {f.renderAll();});
+        tile.setSrc('tetriCross/tetri' + tile.number + '_hint.png', function(i) {f.renderAll();});
     }
 }
 

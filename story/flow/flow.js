@@ -36,7 +36,7 @@ function congratulate() {
 
 canvas.addEventListener('click', function (event) {clickCanvas(event.pageX, event.pageY);}, false);
 
-const imgBackground = loadImage('../images/flowBackground.png', main);
+const imgBackground = loadImage('flow/flowBackground.png', main);
 
 function main() {
     context.drawImage(imgBackground, 0, 0);
