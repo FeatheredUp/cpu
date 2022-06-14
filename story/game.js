@@ -1,6 +1,21 @@
-function loadImage(src, onload) {
+let thisNarration = null;
+let gameImagesToLoad = null;
+let gameImagesLoaded = null;
+
+function initialiseImageLoad(n, imageCount) {
+    thisNarration = n;
+    gameImagesToLoad = imageCount;
+    gameImagesLoaded = 0;
+}
+
+function oneImageLoaded() {
+    gameImagesLoaded += 1;
+    if (gameImagesLoaded == gameImagesToLoad) thisNarration.allImagesLoaded();
+}
+
+function loadImage(src) {
     const img = new Image();
-    img.onload = onload;
+    img.onload = oneImageLoaded;
     img.src = src;
     return img;
 }
@@ -187,7 +202,6 @@ class Menu {
     }
 }
 
-
 class StoryMap {
     pages = [];
     currentPage = null;
@@ -229,7 +243,8 @@ class StoryMap {
         this.pages.push(new Page('WordString.html', 'CityMap.html?3', true));
         this.pages.push(new Page('CityMap.html?3', 'flow.html'));
         this.pages.push(new Page('flow.html', 'tetriCross.html', true));
-        this.pages.push(new Page('tetriCross.html', '', true));
+        this.pages.push(new Page('tetriCross.html', 'applications.html', true));
+        this.pages.push(new Page('applications.html', '', true));
     }
 
     getPage(name) {
@@ -270,6 +285,61 @@ class ListGames {
             }
         }
         document.getElementById('list').appendChild(ul);
+    }
+}
+
+class Narration {
+    canvas;
+    context;
+    narrationImageUrl = 'images/thoughtbubble.png';
+    mainImage;
+    narrationImage;
+    narrationText;
+
+
+    start(canvas, mainImageUrl, narration) {
+        this.narrationText = narration;
+        this.canvas = canvas;
+        this.context = this.canvas.getContext("2d");
+        initialiseImageLoad(this, 2);
+        this.mainImage = loadImage(mainImageUrl);
+        this.narrationImage = loadImage(this.narrationImageUrl);
+    }
+
+    allImagesLoaded() {
+        this.context.drawImage(this.mainImage, 0, 0, 1000, 650);
+        this.context.drawImage(this.narrationImage, 0, 0, 300, 200);
+
+        // fabric.Object.prototype.objectCaching = true;
+
+        // var canvas = new fabric.Canvas('canvas', {
+        //     isDrawingMode: true,
+        //     freeDrawingBrush: new fabric.PencilBrush({ decimate: 8 })
+        //   });  
+          
+          
+        //   canvas.on('before:path:created', function(opt) {
+        //     var path = opt.path;
+        //     var pathInfo = fabric.util.getPathSegmentsInfo(path.path);
+        //     path.segmentsInfo = pathInfo;
+        //     var pathLength = pathInfo[pathInfo.length - 1].length;
+        //     var text = 'This is a demo of text on a path. ';
+        //     var fontSize = 2.5 * pathLength / text.length;
+        //     var text = new fabric.Text(text, { fontSize: fontSize, path: path, top: path.top, left: path.left });
+        //     canvas.add(text);
+        //   });
+        
+        //   canvas.on('path:created', function(opt) {
+        //     canvas.remove(opt.path);
+        //   })
+
+
+
+        // this.context.textAlign = "left";
+        // this.context.font = '10px Verdana, sans-serif';
+        // this.context.fillStyle = 'red';
+        // this.context.strokeStyle = 'red';
+        // this.context.fillText(this.narrationText, 50, 40);
     }
 }
 
@@ -409,6 +479,11 @@ class Game {
         }
     }
 
+    showNarration(canvas, imgUrl, narration) {
+        const n = new Narration();
+        n.start(canvas, imgUrl, narration);
+    }
+
     /********   PRIVATE METHODS   *************/
 
     getPageParameter() {
@@ -416,7 +491,6 @@ class Game {
     }
     getCurrentPageName() {
         return window.location.href.split("/").pop();
-        //return window.location.pathname.split("/").pop().split(".")[0];
     }
 
     getJustCurrentPageName() {

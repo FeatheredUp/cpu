@@ -32,8 +32,8 @@ function displayCompletion(result) {
 const imgBackground = loadImage('flowerbed/flowerbed.png', main);
 let imagesLoaded = 0;
 function main() {
-    imagesLoaded += 1;
-    if (imagesLoaded == 1) {
+    gameImagesLoaded += 1;
+    if (gameImagesLoaded == 1) {
         context.drawImage(imgBackground, 0, 0);
         board.draw(context);
     }

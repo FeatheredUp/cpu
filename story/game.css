@@ -39,16 +39,16 @@ a:active {
 }
 
 .container {
-    display:flex;
+    display: flex;
     flex-direction: column;
 }
 
-.page{
-    display:flex;
+.page {
+    display: flex;
     flex-direction: column;
 }
 
-.mainArea{
+.mainArea {
     align-self: center;
 }
 

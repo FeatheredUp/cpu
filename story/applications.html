@@ -1,20 +1,19 @@
 <html>
     <head>
         <link rel="shortcut icon" type="image/jpg" href="../images/favicon.ico"/>
-        <script src="game.js"></script>
+        <script src="game.js?1"></script>
         <link rel="stylesheet" href="../site.css">
         <link rel="stylesheet" href="game.css">
+        <link rel="stylesheet" href="applications/applications.css">
     </head>
     <body>
         <div class="page">
-            <img src="../images/office.png" id="office" class="mainArea" width="1000" height="650">
-        
+            <canvas id="canvas" width="1000" height="650" class="mainArea"></canvas>
             <button id="btnDone">Click when done</button>
             <img class="menu" id="menu" />
+            <script src="applications/applications.js?1"></script>
         </div>
         <script>
-            const game = new Game();
-
             document.getElementById('btnDone').addEventListener("click", clickButton, false);
 
             function clickButton() {
@@ -23,4 +22,3 @@
         </script>
     </body>
 </html>
-

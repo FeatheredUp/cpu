@@ -1,20 +1,27 @@
 <html>
     <head>
         <link rel="shortcut icon" type="image/jpg" href="../images/favicon.ico"/>
+        <script src="libraries/fabric.min.js"></script>
         <script src="game.js"></script>
         <link rel="stylesheet" href="../site.css">
         <link rel="stylesheet" href="game.css">
     </head>
     <body>
-        <div class="container">
+        <div class="page">
             <p id="pageName">Saberton Tower</p>
+            <canvas id="canvas" width="1000" height="650" class="mainArea"></canvas>
             <button id="btnDone">Click when done</button>
             <img class="menu" id="menu" />
         </div>
         <script>
+            const canvas = document.getElementById('canvas');
+            const image = 'images/saberton.jpg';
+            const narration = 'Saberton Tower nears.  Now to enter the building and find the right appartment.';
             const game = new Game();
-            document.getElementById('pageName').innerText = `Saberton Tower (page ${game.getPageParameter()})`;
 
+            game.showNarration(canvas, image, narration);
+
+            document.getElementById('pageName').innerText = `Saberton Tower (page ${game.getPageParameter()})`;
             document.getElementById('btnDone').addEventListener("click", clickButton, false);
 
             function clickButton() {
