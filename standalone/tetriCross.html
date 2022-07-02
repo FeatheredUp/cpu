@@ -4,9 +4,16 @@
         <link rel="stylesheet" href="standalone.css">
     </head>
     <body>
-        <div class="page">
+        <div class="page" id="intro">
             <h1>Tetricross</h1>
-            <div>
+            <div class="para">You will be playing a prototype of a new puzzle.</div>
+            <div class="para">The game developers want to understand how you interact with the puzzle and so want you to talk through what you're thinking and feeling at every stage.</div>
+            <div class="para">Remember it's the game that's being tested, not you, so if anything is unclear or confusing please mention it.</div>
+            <button id="startPuzzle">Start</button>
+        </div>
+        <div class="page hidden" id="main">
+            <h1>Tetricross</h1>
+            <div class="description">
                 Move the coloured blocks over the grid to cover up letters so the letters left on each line spell a word.  
                 When you have the blocks in the correct place, find the keyword that can be joined with each of the words.
                 If you get stuck, use the hint button to get one of the 4 available hints.
@@ -14,8 +21,12 @@
             <canvas id="canvas" width="1000" height="650" class="mainArea"></canvas>
             <button id="hint">Hint</button>
             <div id="result">Not solved yet.</div>
-            <script src="tetriCross/tetriCross.js?3"></script>
         </div>
-      
+        <div class="page hidden" id="final">
+            <h1>Tetricross</h1>
+            <div class="para">Now you have played the puzzle, we would appreciate it if you would complete the following google form with feedback about your experience. 
+                <a href="https://forms.gle/htvwZbkc6FsV97wPA">Feedback form</a></div>
+                
+        <script src="tetriCross/tetriCross.js?3"></script>
     </body>
 </html>

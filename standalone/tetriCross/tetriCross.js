@@ -1,15 +1,3 @@
-const description =  "Description here.";
-
-/* 
-  TO DO
-  * Stop overlap of shapes either on or off the grid
-  * Key hint
-  * Numbered pieces hint
-  * Extra hints
-  * Enetering the keyword
-  * Description
-*/
-
 const fullWidth = 1000;
 const fullHeight = 650;
 const grid = 48;
@@ -18,11 +6,9 @@ const topOffset = 136;
 const gridWidth = grid * 8;
 const gridHeight = grid * 8;
 
-// Should this come from the game in the end?
 let hintCount = 0;
 
 const canvas = document.getElementById('canvas');
-const keyWordTextbox = createKeyWordTextbox(canvas, 'BLOOD');
 
 const f = new fabric.Canvas('canvas', { selection: false });
 setBackgroundImage('tetriCross/tetriCross.png');
@@ -31,13 +17,18 @@ loadTiles();
 function clickHint() {
     hintCount += 1;
     if (hintCount == 1) {
-        setBackgroundImage('tetriCross/tetriCross_hint1.png');
-    } else if (hintCount == 2) {
+        // Side numbers and numbers on the pieces
+        setBackgroundImage('tetriCross/tetriCross_hint0.png');
         showTileHints();
+    } else if (hintCount == 2) {
+        // Diagram at the bottom (still with numbers on the side)
+        setBackgroundImage('tetriCross/tetriCross_hint1.png');
     } else if (hintCount == 3) {
+        // Also with letters highlighted
         setBackgroundImage('tetriCross/tetriCross_hint2.png');
     } else {
         alert('the keyword is BLOOD');
+        puzzleCompleted();
     }
 }
 
@@ -46,8 +37,8 @@ function setBackgroundImage(img) {
 }
 
 function createKeyWordTextbox(c, answer) {
-    const cleft = c.offsetLeft;
-    const ctop = c.offsetTop;  
+    const cleft = c.offsetParent.offsetLeft;
+    const ctop = c.offsetParent.offsetTop;  
     const style = "position:absolute; left: " + (cleft+97) + "px; top: " + (ctop+61) + "px; width: 340; height: 39px; " 
                 + "font-family: 'verdana'; font-size: 28px; text-transform: uppercase; background-color: transparent; border: none; outline: none;";
     
@@ -60,6 +51,7 @@ function createKeyWordTextbox(c, answer) {
         if (input.value.toUpperCase() == answer) {
             alert('Well done!');
             document.getElementById('result').innerHTML = 'Solved with ' + hintCount + ' hints';
+            puzzleCompleted();
         }
     }, false);
     
@@ -142,8 +134,22 @@ function showTileHints() {
 }
 
 function showKeyword() {
+    const keyWordTextbox = createKeyWordTextbox(canvas, 'BLOOD');
     keyWordTextbox.classList.remove('hidden');
     keyWordTextbox.focus();
+}
+
+function puzzleCompleted() {
+    hidePage('main');
+    showPage('final');
+}
+
+function showPage(page) {
+    document.getElementById(page).classList.remove('hidden');
+}
+
+function hidePage(page) {
+    document.getElementById(page).classList.add('hidden');
 }
 
 // snap to grid
@@ -173,4 +179,9 @@ document.getElementById('hint').addEventListener('click', function() {
     if (confirm('Do you wish to use a hint token?')) {
         clickHint();
     }
+})
+
+document.getElementById('startPuzzle').addEventListener('click', function() {
+    hidePage('intro');
+    showPage('main');
 })
