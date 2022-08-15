@@ -43,6 +43,7 @@ function createKeyWordTextbox(c, answer) {
                 + "font-family: 'verdana'; font-size: 28px; text-transform: uppercase; background-color: transparent; border: none; outline: none;";
     
     var input = document.createElement('input');
+    input.id = 'keyword';
     input.type = 'text';
     input.placeholder = 'enter keyword...';
     input.style = style;
@@ -139,7 +140,13 @@ function showKeyword() {
     keyWordTextbox.focus();
 }
 
+function hideKeyword() {
+    const keyword = document.getElementById('keyword');
+    if (keyword) keyword.classList.add('hidden');
+}
+
 function puzzleCompleted() {
+    hideKeyword();
     hidePage('main');
     showPage('final');
 }

@@ -1,3 +1,5 @@
+// Toggle digits to make them red / white / green
+
 const description =  "Something something something";
 
 const game = new Game(clickHint, description);
