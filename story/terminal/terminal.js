@@ -1,17 +1,8 @@
-
-// const canvas = document.getElementById('canvas');
-// const context = canvas.getContext('2d');
-// const img = new Image();   
-// img.src = '../images/terminal border.png'; 
-// img.addEventListener('load', function() { 
-//     context.drawImage(img,0,0);
-// }, false);
-
-
 let insertedText = document.getElementById('insertedText');
 let previousText = document.getElementById("previousText");
-let printing = false;
+let printing = true;
 let receiveEnteredText = null;
+let maxLength = 10;
 
 /* Receive input */
 function bodyKeypress(event) {
@@ -23,7 +14,7 @@ function bodyKeypress(event) {
     } else if (key == 'Enter') {
         receiveEnteredText();
     } else {
-        insertedText.innerText += extraInput(key);
+        if (insertedText.innerText.length < maxLength) insertedText.innerText += extraInput(key);
     }
 }
 
@@ -49,7 +40,8 @@ function receiveName() {
     if (name == '') {
         displayInvalidName();
     } else {
-        displaySecondMessage(insertedText.innerText);
+        saveValue('Name', name);
+        displaySecondMessage(name);
     }
 }
 
@@ -57,11 +49,44 @@ function receivePasswordAnswer() {
 
 }
 
+function saveValue(name, value) {
+    localStorage.setItem('cpuTerminal' + name, value);
+}
+
 /* Display computer output */
+
+let lines = [];
+let lastLine = '';
+const maxLines = 32;
+
+function displayAllLines() {
+    previousText.innerHTML = '';
+    for (const line of lines) {
+        previousText.innerText += line;
+        previousText.innerHTML += '<br />';
+    }
+}
+
+function addChar(character) {
+    if (character == '|') {
+        lines.push(lastLine);
+        lastLine = '';
+        if (lines.length > maxLines) {
+            // Remove the first line
+            lines.splice(0, 1);
+        }
+
+        displayAllLines();
+    }
+    else {
+        lastLine += character;
+        previousText.innerHTML += character;
+    }
+}
 
 function displayLetter(display, index) {
     let next = display[index];
-    previousText.innerHTML += next.letter;
+    addChar(next.letter);
     index += 1;
     if (index < display.length) {
         setTimeout(displayLetter, next.speed, display, index);
@@ -86,9 +111,7 @@ function resetInput() {
 
 function addToInput(text, speed) {
    for (ch of text) {
-        let toAdd = ch;
-        if (toAdd == '|') toAdd = '<br />';
-        toDisplay.push( {letter: toAdd, speed: speed});
+        toDisplay.push( {letter: ch, speed: speed});
    }
 }
 
@@ -152,5 +175,4 @@ function displaySecondMessage(name) {
     receiveEnteredText = receivePasswordAnswer;
 }
 
-
-displayIntroduction();
+setTimeout(displayIntroduction, 5000);

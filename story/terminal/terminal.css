@@ -11,7 +11,11 @@
     width            : 1060px;
     text-align       : left;
     align-self       : center;
+
+    
+    animation: fadein 5s ;
 }
+
 
 #previousText {
     width   : 960px;
@@ -39,3 +43,11 @@
         color: inherit;
     }
 }
+
+
+  /* Standard syntax */
+  @keyframes fadein {
+    from {opacity: 0.0;}
+    to {opacity: 1;}
+  }
+  
