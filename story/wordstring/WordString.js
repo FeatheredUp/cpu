@@ -87,15 +87,18 @@ class WordPanel {
 
         let x = leftIndent;
         let y = this.initialY + 10;
-        this.context.fillStyle = 'teal';
-        this.context.font = '16px Verdana, sans-serif';
-        this.context.fillText('Words found', x, y);
-        y += wordHeight;
-        this.context.font = '10px Verdana, sans-serif';
         this.context.fillStyle = 'white';
-        this.context.fillText('Search for words from the letters in Nestor\'s name.', x, y);
+        this.context.font = '16px Verdana, sans-serif';
+        this.context.fillText('Safe Words', x, y);
+        y += 25;
+
+        this.displayLine( [
+            { text: 'Search for words from the letters in the name ' },
+            { text: 'Nestor. ', fillStyle: 'white' }
+          ], x, y, '12px Verdana, sans-serif', 'teal');
         y += 15;
-        this.context.fillText('Words you find will appear below in alphabetical order, grouped by length.', x, y);
+        
+        this.displayLine( [{ text: 'The words that you find will appear in alphabetical order.' }], x, y, '12px Verdana, sans-serif', 'teal');
         y += 10;
 
         const groupedWords = this.groupByWordLength(letterPieces.internalValidWords.words);
@@ -107,7 +110,10 @@ class WordPanel {
                 this.context.fillStyle = 'teal';
                 y += wordHeight;
                 x = leftIndent;
-                this.context.fillText(wordLength + '-letter words (' + group.length + ' possible words)', x, y);
+                this.displayLine([
+                    {text: wordLength + '-letter words    '},
+                    {text: group.length + ' possibilities', fillStyle: 'white' }], 
+                    x, y, '12px Verdana, sans-serif', 'teal');
                 y += wordHeight;
 
                 for (const word of group) {
@@ -126,6 +132,17 @@ class WordPanel {
         }
 
         this.context.textBaseline = "middle";
+    }
+
+    displayLine(args, x, y, defaultFont, defaultFillStyle) {
+        this.context.save();
+        args.forEach(({ text, fillStyle, font }) => {
+            this.context.fillStyle = fillStyle || defaultFillStyle;
+            this.context.font = font || defaultFont;
+            this.context.fillText(text, x, y);
+            x += this.context.measureText(text).width;
+        });
+        this.context.restore();
     }
 
     groupByWordLength(list) {
